@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -30,9 +30,13 @@ export function ProductToolbar({ total, onOpenFilters }: ProductToolbarProps) {
     setSearch(filters.search ?? "");
   }, [filters.search]);
 
-  const handleSearch = debounce((value: string) => {
-    updateFilters({ search: value || undefined });
-  }, 350);
+  const handleSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        updateFilters({ search: value || undefined });
+      }, 350),
+    [updateFilters],
+  );
 
   return (
     <div className="flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">

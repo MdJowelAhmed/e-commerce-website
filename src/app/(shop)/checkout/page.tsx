@@ -36,9 +36,10 @@ import {
 import { EXPRESS_SHIPPING_FEE, STANDARD_SHIPPING_FEE } from "@/lib/constants";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { selectCartItems, selectCartTotals } from "@/lib/store/selectors";
-import { clearCart } from "@/lib/store/slices/cart-slice";
+import { useCreateOrderMutation } from "@/lib/store/services/api";
+import { clearCart, setShippingMethod } from "@/lib/store/slices/cart-slice";
 import { cn, formatCurrency } from "@/lib/utils";
-import type { ShippingMethod } from "@/types";
+import type { PaymentMethod, ShippingMethod } from "@/types";
 
 const STEPS: Step[] = [
   { id: "address", label: "Address" },
@@ -49,17 +50,23 @@ const STEPS: Step[] = [
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
+type SafePayment = {
+  method: PaymentMethod;
+  last4?: string;
+};
+
 export default function CheckoutPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const items = useAppSelector(selectCartItems);
   const totals = useAppSelector(selectCartTotals);
+  const shipping = useAppSelector((s) => s.cart.shippingMethod);
+  const [createOrder] = useCreateOrderMutation();
 
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [address, setAddress] = useState<AddressFormValues | null>(null);
-  const [shipping, setShipping] = useState<ShippingMethod>("standard");
-  const [payment, setPayment] = useState<PaymentFormValues | null>(null);
+  const [payment, setPayment] = useState<SafePayment | null>(null);
 
   if (items.length === 0) {
     return (
@@ -76,13 +83,33 @@ export default function CheckoutPage() {
   }
 
   const placeOrder = async () => {
+    if (!address || !payment) return;
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    dispatch(clearCart());
-    setSubmitting(false);
-    const orderNumber = `LX-${Math.floor(100000 + Math.random() * 900000)}`;
-    toast.success("Order placed successfully");
-    router.push(`/order/success?n=${orderNumber}`);
+    try {
+      const order = await createOrder({
+        items,
+        subtotal: totals.subtotal,
+        shipping: totals.shipping,
+        tax: totals.tax,
+        discount: totals.discount,
+        total: totals.total,
+        paymentMethod: payment.method,
+        shippingMethod: shipping,
+        shippingAddress: address,
+        customer: {
+          id: "guest",
+          name: address.fullName,
+          email: address.email,
+        },
+      }).unwrap();
+      dispatch(clearCart());
+      toast.success("Order placed successfully");
+      router.push(`/order/success?n=${order.number}`);
+    } catch {
+      toast.error("Could not place order. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -129,7 +156,7 @@ export default function CheckoutPage() {
               >
                 <ShippingStep
                   value={shipping}
-                  onChange={setShipping}
+                  onChange={(method) => dispatch(setShippingMethod(method))}
                   onBack={() => setStep(0)}
                   onNext={() => setStep(2)}
                 />
@@ -144,10 +171,13 @@ export default function CheckoutPage() {
                 transition={{ duration: 0.3, ease: easeOut }}
               >
                 <PaymentStep
-                  defaultValues={payment}
                   onBack={() => setStep(1)}
                   onNext={(data) => {
-                    setPayment(data);
+                    const digits = (data.cardNumber ?? "").replace(/\D/g, "");
+                    setPayment({
+                      method: data.method,
+                      last4: data.method === "card" && digits.length >= 4 ? digits.slice(-4) : undefined,
+                    });
                     setStep(3);
                   }}
                 />
@@ -342,11 +372,9 @@ function ShippingOption({
 }
 
 function PaymentStep({
-  defaultValues,
   onBack,
   onNext,
 }: {
-  defaultValues: PaymentFormValues | null;
   onBack: () => void;
   onNext: (data: PaymentFormValues) => void;
 }) {
@@ -358,7 +386,7 @@ function PaymentStep({
     formState: { errors },
   } = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
-    defaultValues: defaultValues ?? {
+    defaultValues: {
       method: "card",
       cardName: "",
       cardNumber: "",
@@ -370,7 +398,13 @@ function PaymentStep({
   const method = watch("method");
 
   return (
-    <form onSubmit={handleSubmit(onNext)} className="space-y-5">
+    <form
+      onSubmit={handleSubmit((data) => {
+        // Never persist full card details past this form submit
+        onNext(data);
+      })}
+      className="space-y-5"
+    >
       <h2 className="text-lg font-semibold">Payment</h2>
       <div className="grid gap-3 sm:grid-cols-3">
         <PaymentMethodCard
@@ -505,7 +539,7 @@ function ReviewStep({
   totalsTotal: number;
   address: AddressFormValues;
   shipping: ShippingMethod;
-  payment: PaymentFormValues;
+  payment: SafePayment;
   onBack: () => void;
   onPlaceOrder: () => void;
   submitting: boolean;
@@ -534,8 +568,8 @@ function ReviewStep({
         </SummaryBlock>
         <SummaryBlock title="Payment method">
           <p className="font-medium capitalize text-foreground">{payment.method}</p>
-          {payment.method === "card" && payment.cardNumber && (
-            <p>•••• •••• •••• {payment.cardNumber.slice(-4)}</p>
+          {payment.method === "card" && payment.last4 && (
+            <p>•••• •••• •••• {payment.last4}</p>
           )}
         </SummaryBlock>
         <SummaryBlock title="Contact">

@@ -60,16 +60,6 @@ export function MobileMenu() {
               </motion.div>
             );
           })}
-          <motion.div variants={itemVariants} className="mt-4 border-t pt-4">
-            <Link
-              href="/admin"
-              onClick={() => dispatch(setMobileMenuOpen(false))}
-              className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-foreground/80 transition-colors hover:bg-secondary"
-            >
-              Admin dashboard
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </Link>
-          </motion.div>
         </motion.nav>
         <div className="border-t p-4">
           <Button asChild className="w-full" size="lg">

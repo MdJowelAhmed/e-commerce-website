@@ -6,35 +6,38 @@ export interface WishlistState {
   items: WishlistItem[];
 }
 
-const STORAGE_KEY = "luxe.wishlist.v1";
+export const WISHLIST_STORAGE_KEY = "luxe.wishlist.v1";
 
-function loadInitialState(): WishlistState {
-  if (typeof window === "undefined") return { items: [] };
+export const emptyWishlistState = (): WishlistState => ({ items: [] });
+
+export function loadWishlistFromStorage(): WishlistState | null {
+  if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { items: [] };
+    const raw = window.localStorage.getItem(WISHLIST_STORAGE_KEY);
+    if (!raw) return null;
     const parsed = JSON.parse(raw) as WishlistState;
     return { items: Array.isArray(parsed.items) ? parsed.items : [] };
   } catch {
-    return { items: [] };
+    return null;
   }
 }
 
-function persist(state: WishlistState) {
+export function saveWishlistToStorage(state: WishlistState): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    window.localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(state));
   } catch {
     /* ignore */
   }
 }
 
-const initialState: WishlistState = loadInitialState();
-
 const wishlistSlice = createSlice({
   name: "wishlist",
-  initialState,
+  initialState: emptyWishlistState(),
   reducers: {
+    hydrateWishlist(_state, action: PayloadAction<WishlistState>) {
+      return action.payload;
+    },
     toggleWishlist(state, action: PayloadAction<WishlistItem>) {
       const existing = state.items.findIndex((i) => i.productId === action.payload.productId);
       if (existing >= 0) {
@@ -42,18 +45,17 @@ const wishlistSlice = createSlice({
       } else {
         state.items.unshift(action.payload);
       }
-      persist(state);
     },
     removeFromWishlist(state, action: PayloadAction<string>) {
       state.items = state.items.filter((i) => i.productId !== action.payload);
-      persist(state);
     },
     clearWishlist(state) {
       state.items = [];
-      persist(state);
     },
   },
 });
 
-export const { toggleWishlist, removeFromWishlist, clearWishlist } = wishlistSlice.actions;
+export const { hydrateWishlist, toggleWishlist, removeFromWishlist, clearWishlist } =
+  wishlistSlice.actions;
+
 export default wishlistSlice.reducer;

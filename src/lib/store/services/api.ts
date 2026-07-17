@@ -2,7 +2,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import type {
   Category,
-  Customer,
   Order,
   Paginated,
   Product,
@@ -25,13 +24,10 @@ export type ProductsQuery = {
   perPage?: number;
 };
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
 
 /**
- * RTK Query API definition. All product, order, customer and analytics
- * endpoints go through this single api slice for consistent caching,
- * invalidation and request deduplication.
+ * RTK Query API definition for storefront server state.
  */
 export const api = createApi({
   reducerPath: "api",
@@ -42,7 +38,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Products", "Product", "Categories", "Reviews", "Orders", "Customers", "Testimonials"],
+  tagTypes: ["Products", "Product", "Categories", "Reviews", "Orders", "Testimonials"],
   endpoints: (builder) => ({
     listProducts: builder.query<Paginated<Product>, ProductsQuery | void>({
       query: (params) => ({
@@ -87,11 +83,6 @@ export const api = createApi({
       providesTags: [{ type: "Orders", id: "LIST" }],
     }),
 
-    listCustomers: builder.query<Customer[], void>({
-      query: () => "/customers",
-      providesTags: [{ type: "Customers", id: "LIST" }],
-    }),
-
     createOrder: builder.mutation<Order, Partial<Order>>({
       query: (body) => ({ url: "/orders", method: "POST", body }),
       invalidatesTags: [{ type: "Orders", id: "LIST" }],
@@ -125,7 +116,6 @@ export const {
   useGetReviewsQuery,
   useListTestimonialsQuery,
   useListOrdersQuery,
-  useListCustomersQuery,
   useCreateOrderMutation,
   useSubscribeNewsletterMutation,
 } = api;

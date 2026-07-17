@@ -1,8 +1,17 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
+import {
+  hydrateCart,
+  loadCartFromStorage,
+} from "./slices/cart-slice";
+import {
+  hydrateWishlist,
+  loadWishlistFromStorage,
+} from "./slices/wishlist-slice";
 import { type AppStore, makeStore } from "./store";
 
 export function ReduxProvider({ children }: { children: React.ReactNode }) {
@@ -10,6 +19,19 @@ export function ReduxProvider({ children }: { children: React.ReactNode }) {
   if (!storeRef.current) {
     storeRef.current = makeStore();
   }
+
+  useEffect(() => {
+    const store = storeRef.current;
+    if (!store) return;
+
+    const cart = loadCartFromStorage();
+    if (cart) store.dispatch(hydrateCart(cart));
+
+    const wishlist = loadWishlistFromStorage();
+    if (wishlist) store.dispatch(hydrateWishlist(wishlist));
+
+    return setupListeners(store.dispatch);
+  }, []);
 
   return <Provider store={storeRef.current}>{children}</Provider>;
 }

@@ -2,7 +2,7 @@
   "name": "luxe-ecommerce",
   "version": "1.0.0",
   "private": true,
-  "description": "Premium production-ready eCommerce template built with Next.js 15, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion, Redux Toolkit and RTK Query.",
+  "description": "Premium storefront eCommerce template built with Next.js 15, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion, Redux Toolkit and RTK Query.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

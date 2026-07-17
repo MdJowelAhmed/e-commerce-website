@@ -10,7 +10,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
     <div className="flex min-h-screen flex-col">
       <AnnouncementBar />
       <Navbar />
-      <main className="flex-1 pt-16 md:pt-20">{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer />
       <CartDrawer />
       <MobileMenu />

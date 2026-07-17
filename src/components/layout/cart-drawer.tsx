@@ -17,8 +17,8 @@ import {
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
+  selectCartCount,
   selectCartItems,
-  selectCartSubtotal,
   selectCartTotals,
 } from "@/lib/store/selectors";
 import { removeItem, updateQuantity } from "@/lib/store/slices/cart-slice";
@@ -29,11 +29,16 @@ export function CartDrawer() {
   const dispatch = useAppDispatch();
   const open = useAppSelector((s) => s.ui.cartOpen);
   const items = useAppSelector(selectCartItems);
-  const subtotal = useAppSelector(selectCartSubtotal);
+  const cartCount = useAppSelector(selectCartCount);
   const totals = useAppSelector(selectCartTotals);
 
-  const progress = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
-  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  const progress = Math.min(
+    100,
+    Math.round(
+      ((totals.subtotalAfterDiscount) / FREE_SHIPPING_THRESHOLD) * 100,
+    ),
+  );
+  const remaining = totals.amountToFreeShipping;
 
   return (
     <Sheet open={open} onOpenChange={(v) => dispatch(setCartOpen(v))}>
@@ -43,7 +48,7 @@ export function CartDrawer() {
             <ShoppingBag className="h-5 w-5" />
             Your Bag
             <span className="text-sm font-normal text-muted-foreground">
-              ({items.length} {items.length === 1 ? "item" : "items"})
+              ({cartCount} {cartCount === 1 ? "item" : "items"})
             </span>
           </SheetTitle>
           <SheetDescription className="sr-only">

@@ -1,54 +1,65 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { CartItem } from "@/types";
+import type { CartItem, ShippingMethod } from "@/types";
 
 export interface CartState {
   items: CartItem[];
   couponCode: string | null;
   couponDiscount: number;
+  shippingMethod: ShippingMethod;
 }
 
-const STORAGE_KEY = "luxe.cart.v1";
+export const CART_STORAGE_KEY = "luxe.cart.v1";
 
-function loadInitialState(): CartState {
-  if (typeof window === "undefined") {
-    return { items: [], couponCode: null, couponDiscount: 0 };
-  }
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { items: [], couponCode: null, couponDiscount: 0 };
-    const parsed = JSON.parse(raw) as CartState;
-    return {
-      items: Array.isArray(parsed.items) ? parsed.items : [],
-      couponCode: parsed.couponCode ?? null,
-      couponDiscount: typeof parsed.couponDiscount === "number" ? parsed.couponDiscount : 0,
-    };
-  } catch {
-    return { items: [], couponCode: null, couponDiscount: 0 };
-  }
-}
-
-function persistState(state: CartState): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // ignore quota errors
-  }
-}
-
-const initialState: CartState = loadInitialState();
-
-const COUPONS: Record<string, number> = {
+export const COUPONS: Record<string, number> = {
   LUXE10: 10,
   WELCOME15: 15,
   VIP25: 25,
 };
 
+export const emptyCartState = (): CartState => ({
+  items: [],
+  couponCode: null,
+  couponDiscount: 0,
+  shippingMethod: "standard",
+});
+
+export function loadCartFromStorage(): CartState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<CartState>;
+    return {
+      items: Array.isArray(parsed.items) ? parsed.items : [],
+      couponCode: parsed.couponCode ?? null,
+      couponDiscount: typeof parsed.couponDiscount === "number" ? parsed.couponDiscount : 0,
+      shippingMethod:
+        parsed.shippingMethod === "express" || parsed.shippingMethod === "standard"
+          ? parsed.shippingMethod
+          : "standard",
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function saveCartToStorage(state: CartState): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    /* ignore quota errors */
+  }
+}
+
 const cartSlice = createSlice({
   name: "cart",
-  initialState,
+  initialState: emptyCartState(),
   reducers: {
+    hydrateCart(_state, action: PayloadAction<CartState>) {
+      return action.payload;
+    },
     addItem(state, action: PayloadAction<CartItem>) {
       const incoming = action.payload;
       const existing = state.items.find(
@@ -63,7 +74,6 @@ const cartSlice = createSlice({
           quantity: Math.min(incoming.quantity, incoming.stock),
         });
       }
-      persistState(state);
     },
     updateQuantity(
       state,
@@ -72,22 +82,17 @@ const cartSlice = createSlice({
       const { id, variantId, quantity } = action.payload;
       const item = state.items.find((i) => i.id === id && i.variantId === variantId);
       if (!item) return;
-      const next = Math.max(1, Math.min(quantity, item.stock));
-      item.quantity = next;
-      persistState(state);
+      item.quantity = Math.max(1, Math.min(quantity, item.stock));
     },
     removeItem(state, action: PayloadAction<{ id: string; variantId: string }>) {
       const { id, variantId } = action.payload;
-      state.items = state.items.filter(
-        (i) => !(i.id === id && i.variantId === variantId),
-      );
-      persistState(state);
+      state.items = state.items.filter((i) => !(i.id === id && i.variantId === variantId));
     },
     clearCart(state) {
       state.items = [];
       state.couponCode = null;
       state.couponDiscount = 0;
-      persistState(state);
+      state.shippingMethod = "standard";
     },
     applyCoupon(state, action: PayloadAction<string>) {
       const code = action.payload.toUpperCase().trim();
@@ -99,17 +104,26 @@ const cartSlice = createSlice({
         state.couponCode = null;
         state.couponDiscount = 0;
       }
-      persistState(state);
     },
     removeCoupon(state) {
       state.couponCode = null;
       state.couponDiscount = 0;
-      persistState(state);
+    },
+    setShippingMethod(state, action: PayloadAction<ShippingMethod>) {
+      state.shippingMethod = action.payload;
     },
   },
 });
 
-export const { addItem, updateQuantity, removeItem, clearCart, applyCoupon, removeCoupon } =
-  cartSlice.actions;
+export const {
+  hydrateCart,
+  addItem,
+  updateQuantity,
+  removeItem,
+  clearCart,
+  applyCoupon,
+  removeCoupon,
+  setShippingMethod,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;

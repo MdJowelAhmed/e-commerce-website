@@ -17,18 +17,20 @@ export function Navbar() {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const [scrolled, setScrolled] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const cartCount = useAppSelector(selectCartCount);
   const wishlist = useAppSelector(selectWishlistItems);
 
   useEffect(() => {
+    setHydrated(true);
     const handler = () => setScrolled(window.scrollY > 12);
     handler();
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const isAdmin = pathname.startsWith("/admin");
-  if (isAdmin) return null;
+  const displayCart = hydrated ? cartCount : 0;
+  const displayWishlist = hydrated ? wishlist.length : 0;
 
   return (
     <motion.header
@@ -36,10 +38,10 @@ export function Navbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "fixed inset-x-0 top-0 z-40 transition-all duration-300 mt-6",
+        "sticky top-0 z-40 transition-all duration-300",
         scrolled
           ? "border-b border-border/60 bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
-          : "border-b border-transparent bg-transparent",
+          : "border-b border-transparent bg-background/80 backdrop-blur-md",
       )}
     >
       <div className="container-wide flex h-16 items-center justify-between gap-4 md:h-20">
@@ -115,14 +117,14 @@ export function Navbar() {
             <Link href="/wishlist">
               <Heart className="h-5 w-5" />
               <AnimatePresence>
-                {wishlist.length > 0 && (
+                {displayWishlist > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
                     className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-foreground"
                   >
-                    {wishlist.length}
+                    {displayWishlist}
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -137,16 +139,16 @@ export function Navbar() {
           >
             <ShoppingBag className="h-5 w-5" />
             <AnimatePresence>
-              {cartCount > 0 && (
+              {displayCart > 0 && (
                 <motion.span
-                  key={cartCount}
+                  key={displayCart}
                   initial={{ scale: 0, y: -6 }}
                   animate={{ scale: 1, y: 0 }}
                   exit={{ scale: 0 }}
                   transition={{ type: "spring", stiffness: 500, damping: 25 }}
                   className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-semibold text-background"
                 >
-                  {cartCount}
+                  {displayCart}
                 </motion.span>
               )}
             </AnimatePresence>

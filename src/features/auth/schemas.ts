@@ -18,8 +18,8 @@ export const registerSchema = z
       .regex(/[A-Z]/, "Include an uppercase letter")
       .regex(/[0-9]/, "Include a number"),
     confirmPassword: z.string(),
-    terms: z.literal(true, {
-      errorMap: () => ({ message: "You must accept the terms to continue" }),
+    terms: z.boolean().refine((value) => value === true, {
+      message: "You must accept the terms to continue",
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {

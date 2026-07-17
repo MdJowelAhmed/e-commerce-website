@@ -35,7 +35,7 @@ export default function RegisterPage() {
       email: "",
       password: "",
       confirmPassword: "",
-      terms: true,
+      terms: false,
     },
   });
 
@@ -117,7 +117,7 @@ export default function RegisterPage() {
         <label className="flex items-start gap-2 text-sm text-muted-foreground">
           <Checkbox
             checked={!!watch("terms")}
-            onCheckedChange={(v) => setValue("terms", Boolean(v) as true)}
+            onCheckedChange={(v) => setValue("terms", Boolean(v), { shouldValidate: true })}
             className="mt-0.5"
           />
           <span>

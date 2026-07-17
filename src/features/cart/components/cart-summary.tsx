@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Loader2, TicketPercent } from "lucide-react";
 import { toast } from "sonner";
@@ -8,10 +9,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { selectCartTotals } from "@/lib/store/selectors";
-import { applyCoupon, removeCoupon } from "@/lib/store/slices/cart-slice";
+import {
+  applyCoupon,
+  COUPONS,
+  removeCoupon,
+} from "@/lib/store/slices/cart-slice";
 import { cn, formatCurrency } from "@/lib/utils";
 
 interface CartSummaryProps {
@@ -40,18 +44,20 @@ export function CartSummary({
     if (!input.trim()) return;
     setApplying(true);
     await new Promise((r) => setTimeout(r, 400));
-    dispatch(applyCoupon(input));
+    const normalized = input.toUpperCase().trim();
+    dispatch(applyCoupon(normalized));
     setApplying(false);
-    const accepted = ["LUXE10", "WELCOME15", "VIP25"].includes(input.toUpperCase().trim());
-    if (accepted) {
-      toast.success(`Coupon ${input.toUpperCase()} applied`);
+    if (COUPONS[normalized]) {
+      toast.success(`Coupon ${normalized} applied`);
       setInput("");
     } else {
       toast.error("Invalid coupon code");
     }
   };
 
-  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - totals.subtotal);
+  const remaining = totals.amountToFreeShipping;
+  const showFreeShippingHint =
+    totals.shippingMethod === "standard" && remaining > 0 && totals.subtotal > 0;
 
   return (
     <div className="space-y-5 rounded-2xl border bg-background p-6">
@@ -93,9 +99,13 @@ export function CartSummary({
           </div>
         )}
         <p className="mt-2 text-xs text-muted-foreground">
-          Try <span className="font-medium">LUXE10</span>,{" "}
-          <span className="font-medium">WELCOME15</span> or{" "}
-          <span className="font-medium">VIP25</span>
+          Try{" "}
+          {Object.keys(COUPONS).map((c, i, arr) => (
+            <span key={c}>
+              <span className="font-medium">{c}</span>
+              {i < arr.length - 1 ? (i === arr.length - 2 ? " or " : ", ") : ""}
+            </span>
+          ))}
         </p>
       </div>
 
@@ -107,14 +117,14 @@ export function CartSummary({
           <Row label="Discount" value={`-${formatCurrency(totals.discount)}`} highlight="success" />
         )}
         <Row
-          label="Shipping"
+          label={totals.shippingMethod === "express" ? "Express shipping" : "Shipping"}
           value={totals.shipping === 0 ? "FREE" : formatCurrency(totals.shipping)}
           highlight={totals.shipping === 0 ? "success" : undefined}
         />
         <Row label="Tax" value={formatCurrency(totals.tax)} />
-        {remaining > 0 && totals.subtotal > 0 && (
+        {showFreeShippingHint && (
           <p className="rounded-xl bg-secondary/60 px-3 py-2 text-xs text-muted-foreground">
-            You're {formatCurrency(remaining)} away from free shipping.
+            You're {formatCurrency(remaining)} away from free standard shipping.
           </p>
         )}
       </div>
@@ -153,7 +163,7 @@ export function CartSummary({
               )}
             </span>
           ) : (
-            <a href={ctaHref}>{ctaLabel}</a>
+            <Link href={ctaHref}>{ctaLabel}</Link>
           )}
         </Button>
       )}

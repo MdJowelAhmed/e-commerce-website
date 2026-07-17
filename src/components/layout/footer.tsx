@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Facebook, Instagram, Loader2, Mail, Twitter, Youtube } from "lucide-react";
 import { toast } from "sonner";
@@ -13,9 +12,6 @@ import { FOOTER_LINKS, SITE_CONFIG } from "@/lib/constants";
 import { useSubscribeNewsletterMutation } from "@/lib/store/services/api";
 
 export function Footer() {
-  const pathname = usePathname();
-  if (pathname.startsWith("/admin")) return null;
-
   return (
     <footer className="border-t bg-secondary/40">
       <NewsletterBlock />

@@ -33,21 +33,20 @@ export const FOOTER_LINKS = {
     { href: "/products?featured=true", label: "Featured" },
   ],
   Support: [
-    { href: "/contact", label: "Contact" },
-    { href: "/shipping", label: "Shipping & Returns" },
-    { href: "/faq", label: "FAQ" },
     { href: "/orders", label: "Track Order" },
+    { href: "/wishlist", label: "Wishlist" },
+    { href: "/cart", label: "Shopping Bag" },
+    { href: "/about", label: "Help & About" },
   ],
   Company: [
     { href: "/about", label: "About Us" },
-    { href: "/careers", label: "Careers" },
-    { href: "/press", label: "Press" },
-    { href: "/sustainability", label: "Sustainability" },
+    { href: "/products", label: "Collections" },
+    { href: "/login", label: "Account" },
+    { href: "/register", label: "Join Luxe" },
   ],
   Legal: [
-    { href: "/privacy", label: "Privacy Policy" },
-    { href: "/terms", label: "Terms of Service" },
-    { href: "/cookies", label: "Cookie Policy" },
+    { href: "/about", label: "Privacy overview" },
+    { href: "/about", label: "Terms overview" },
   ],
 } as const;
 

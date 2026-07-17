@@ -1,8 +1,8 @@
 "use client";
 
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/query";
 
+import { persistMiddleware } from "./persist-middleware";
 import { api } from "./services/api";
 import cartReducer from "./slices/cart-slice";
 import uiReducer from "./slices/ui-slice";
@@ -23,20 +23,12 @@ export const makeStore = () =>
         serializableCheck: {
           ignoredActions: [],
         },
-      }).concat(api.middleware),
+      })
+        .concat(api.middleware)
+        .concat(persistMiddleware),
     devTools: process.env.NODE_ENV !== "production",
   });
 
 export type AppStore = ReturnType<typeof makeStore>;
 export type RootState = ReturnType<AppStore["getState"]>;
 export type AppDispatch = AppStore["dispatch"];
-
-let _store: AppStore | undefined;
-
-export const getStore = (): AppStore => {
-  if (!_store) {
-    _store = makeStore();
-    setupListeners(_store.dispatch);
-  }
-  return _store;
-};

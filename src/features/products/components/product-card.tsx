@@ -34,8 +34,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
   const primaryImage = product.images[0];
   const secondaryImage = product.images[1] ?? product.images[0];
 
-  const handleQuickAdd = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleQuickAdd = () => {
     const defaultColor = product.colors[0];
     const defaultSize = product.sizes.find((s) => s.available) ?? product.sizes[0];
     const variant =
@@ -65,8 +64,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
     toast.success(`${product.name} added to bag`);
   };
 
-  const handleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleWishlist = () => {
     dispatch(
       toggleWishlist({
         productId: product.id,
@@ -89,14 +87,11 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.45, delay: Math.min(index * 0.04, 0.4), ease: [0.22, 1, 0.36, 1] }}
       className="group relative"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <Link
-        href={`/product/${product.slug}`}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="block"
-      >
-        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-secondary">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-secondary">
+        <Link href={`/product/${product.slug}`} className="absolute inset-0 block">
           <motion.div
             animate={{ scale: hovered ? 1.04 : 1 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -127,29 +122,29 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
               )}
             />
           )}
+        </Link>
 
-          <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-            <div className="flex flex-col gap-1.5">
-              {product.isNew && <Badge>New</Badge>}
-              {discount > 0 && (
-                <Badge variant="accent">-{discount}%</Badge>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={handleWishlist}
-              aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-              className="pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white"
-            >
-              <Heart
-                className={cn(
-                  "h-4 w-4 transition-colors",
-                  inWishlist && "fill-rose-500 text-rose-500",
-                )}
-              />
-            </button>
+        <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-2">
+          <div className="flex flex-col gap-1.5">
+            {product.isNew && <Badge>New</Badge>}
+            {discount > 0 && <Badge variant="accent">-{discount}%</Badge>}
           </div>
+          <button
+            type="button"
+            onClick={handleWishlist}
+            aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+            className="pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white"
+          >
+            <Heart
+              className={cn(
+                "h-4 w-4 transition-colors",
+                inWishlist && "fill-rose-500 text-rose-500",
+              )}
+            />
+          </button>
+        </div>
 
+        <div className="absolute inset-x-3 bottom-3 z-10">
           <AnimatePresence>
             {hovered && (
               <motion.div
@@ -157,52 +152,61 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 18, opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="absolute inset-x-3 bottom-3 hidden md:block"
+                className="hidden md:block"
               >
-                <Button
-                  type="button"
-                  className="w-full shadow-lg"
-                  onClick={handleQuickAdd}
-                >
+                <Button type="button" className="w-full shadow-lg" onClick={handleQuickAdd}>
                   <ShoppingBag className="h-4 w-4" />
                   Quick add
                 </Button>
               </motion.div>
             )}
           </AnimatePresence>
+          <Button
+            type="button"
+            size="sm"
+            className="w-full shadow-lg md:hidden"
+            onClick={handleQuickAdd}
+          >
+            <ShoppingBag className="h-4 w-4" />
+            Add
+          </Button>
         </div>
+      </div>
 
-        <div className="mt-4 space-y-1.5">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              {product.brand}
-            </span>
-            <StarRating value={product.rating} showValue />
+      <div className="mt-4 space-y-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            {product.brand}
+          </span>
+          <StarRating value={product.rating} showValue />
+        </div>
+        <h3 className="line-clamp-1 text-sm font-medium">
+          <Link href={`/product/${product.slug}`} className="hover:underline">
+            {product.name}
+          </Link>
+        </h3>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-baseline gap-2">
+            <span className="font-semibold tracking-tight">{formatCurrency(product.price)}</span>
+            {product.comparePrice && (
+              <span className="text-xs text-muted-foreground line-through">
+                {formatCurrency(product.comparePrice)}
+              </span>
+            )}
           </div>
-          <h3 className="line-clamp-1 text-sm font-medium">{product.name}</h3>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-baseline gap-2">
-              <span className="font-semibold tracking-tight">{formatCurrency(product.price)}</span>
-              {product.comparePrice && (
-                <span className="text-xs text-muted-foreground line-through">
-                  {formatCurrency(product.comparePrice)}
-                </span>
-              )}
-            </div>
-            <div className="flex -space-x-1">
-              {product.colors.slice(0, 4).map((c) => (
-                <span
-                  key={c.id}
-                  className="h-3.5 w-3.5 rounded-full border border-background ring-1 ring-border"
-                  style={{ backgroundColor: c.hex }}
-                  title={c.name}
-                />
-              ))}
-            </div>
+          <div className="flex -space-x-1">
+            {product.colors.slice(0, 4).map((c) => (
+              <span
+                key={c.id}
+                className="h-3.5 w-3.5 rounded-full border border-background ring-1 ring-border"
+                style={{ backgroundColor: c.hex }}
+                title={c.name}
+              />
+            ))}
           </div>
         </div>
-      </Link>
+      </div>
     </motion.article>
   );
 }
