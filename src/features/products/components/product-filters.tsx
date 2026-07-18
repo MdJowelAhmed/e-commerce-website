@@ -100,7 +100,7 @@ export function ProductFilters({ onClose }: { onClose?: () => void }) {
 
         <AccordionItem value="price">
           <AccordionTrigger>Price</AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="overflow-visible px-1 pt-3">
             <Slider
               value={price}
               min={0}

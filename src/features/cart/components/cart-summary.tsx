@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Loader2, TicketPercent } from "lucide-react";
+import { Crown, Loader2, TicketPercent } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -63,6 +63,34 @@ export function CartSummary({
     <div className="space-y-5 rounded-2xl border bg-background p-6">
       <h2 className="text-lg font-semibold">Order summary</h2>
 
+      {totals.customOfferSubtotal > 0 && (
+        <div className="rounded-xl border border-accent/30 bg-accent/5 p-3">
+          <p className="text-sm font-medium">
+            Custom Offer
+            {totals.customOfferDiscount > 0
+              ? ` · ${totals.customOfferDiscount}% unlocked`
+              : ""}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {formatCurrency(totals.customOfferSubtotal)} of selected bundle items
+          </p>
+        </div>
+      )}
+
+      {totals.membershipDiscount > 0 && (
+        <div className="flex items-center gap-3 rounded-xl border border-amber-300/50 bg-amber-50 p-3 text-amber-950 dark:border-amber-700/50 dark:bg-amber-950/30 dark:text-amber-200">
+          <Crown className="h-5 w-5 shrink-0" />
+          <div>
+            <p className="text-sm font-medium capitalize">
+              {totals.membershipTier} member
+            </p>
+            <p className="text-xs opacity-70">
+              {totals.membershipDiscount}% membership discount available
+            </p>
+          </div>
+        </div>
+      )}
+
       <div>
         {code ? (
           <div className="flex items-center justify-between rounded-xl border border-success/30 bg-success/5 p-3">
@@ -113,8 +141,26 @@ export function CartSummary({
 
       <div className="space-y-2 text-sm">
         <Row label="Subtotal" value={formatCurrency(totals.subtotal)} />
-        {totals.discount > 0 && (
-          <Row label="Discount" value={`-${formatCurrency(totals.discount)}`} highlight="success" />
+        {totals.discountSource === "coupon" && totals.discount > 0 && (
+          <Row
+            label={`Coupon (${discount}%)`}
+            value={`-${formatCurrency(totals.discount)}`}
+            highlight="success"
+          />
+        )}
+        {totals.discountSource !== "coupon" && totals.customOfferDiscountAmount > 0 && (
+          <Row
+            label={`Custom Offer (${totals.customOfferDiscount}%)`}
+            value={`-${formatCurrency(totals.customOfferDiscountAmount)}`}
+            highlight="success"
+          />
+        )}
+        {totals.discountSource !== "coupon" && totals.membershipDiscountAmount > 0 && (
+          <Row
+            label={`Membership (${totals.membershipDiscount}%)`}
+            value={`-${formatCurrency(totals.membershipDiscountAmount)}`}
+            highlight="success"
+          />
         )}
         <Row
           label={totals.shippingMethod === "express" ? "Express shipping" : "Shipping"}

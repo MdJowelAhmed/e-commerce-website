@@ -3,13 +3,29 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { ChevronRight, LogIn } from "lucide-react";
+import {
+  Award,
+  ChevronRight,
+  Crown,
+  Gift,
+  LogIn,
+  Package,
+  RotateCcw,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { setMobileMenuOpen } from "@/lib/store/slices/ui-slice";
+
+const ACCOUNT_LINKS = [
+  { href: "/custom-offer", label: "Custom Offer", icon: Gift },
+  { href: "/orders", label: "My Orders", icon: Package },
+  { href: "/returns", label: "Returns", icon: RotateCcw },
+  { href: "/rewards", label: "Rewards", icon: Award },
+  { href: "/membership", label: "Membership", icon: Crown },
+] as const;
 
 const containerVariants = {
   hidden: {},
@@ -54,6 +70,33 @@ export function MobileMenu() {
                 >
                   <span className={isActive ? "text-foreground" : "text-foreground/80"}>
                     {link.label}
+                  </span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
+                </Link>
+              </motion.div>
+            );
+          })}
+          <motion.p
+            variants={itemVariants}
+            className="px-4 pb-1 pt-4 text-xs uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            Account
+          </motion.p>
+          {ACCOUNT_LINKS.map((link) => {
+            const Icon = link.icon;
+            const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+            return (
+              <motion.div key={link.href} variants={itemVariants}>
+                <Link
+                  href={link.href}
+                  onClick={() => dispatch(setMobileMenuOpen(false))}
+                  className="group flex items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors hover:bg-secondary"
+                >
+                  <span className="inline-flex items-center gap-3">
+                    <Icon className="h-4 w-4 text-muted-foreground" />
+                    <span className={isActive ? "text-foreground" : "text-foreground/80"}>
+                      {link.label}
+                    </span>
                   </span>
                   <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
                 </Link>

@@ -1,6 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+import { CURRENCY } from "@/lib/constants";
+
 /**
  * Combine class names with Tailwind-aware conflict resolution.
  */
@@ -9,13 +11,17 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 /**
- * Format a number as a currency string. Defaults to USD.
+ * Format a number as a currency string. Defaults to the storefront currency.
  */
 export function formatCurrency(
   amount: number,
   options: { currency?: string; locale?: string; maximumFractionDigits?: number } = {},
 ): string {
-  const { currency = "USD", locale = "en-US", maximumFractionDigits = 2 } = options;
+  const {
+    currency = CURRENCY.code,
+    locale = CURRENCY.locale,
+    maximumFractionDigits = 0,
+  } = options;
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,

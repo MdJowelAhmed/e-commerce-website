@@ -3,6 +3,8 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   EXPRESS_SHIPPING_FEE,
   FREE_SHIPPING_THRESHOLD,
+  getCustomOfferDiscount,
+  getMembershipDiscount,
   STANDARD_SHIPPING_FEE,
   TAX_RATE,
 } from "@/lib/constants";
@@ -13,6 +15,10 @@ export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectCouponCode = (state: RootState) => state.cart.couponCode;
 export const selectCouponDiscount = (state: RootState) => state.cart.couponDiscount;
 export const selectShippingMethod = (state: RootState) => state.cart.shippingMethod;
+export const selectCustomOfferVariantIds = (state: RootState) =>
+  state.cart.customOfferVariantIds;
+export const selectMembershipTier = (state: RootState) =>
+  state.commerce.membershipTier;
 
 export const selectCartCount = createSelector(selectCartItems, (items) =>
   items.reduce((sum, item) => sum + item.quantity, 0),
@@ -25,9 +31,43 @@ export const selectCartSubtotal = createSelector(selectCartItems, (items) =>
 );
 
 export const selectCartTotals = createSelector(
-  [selectCartSubtotal, selectCouponDiscount, selectShippingMethod],
-  (subtotal, couponDiscount, shippingMethod) => {
-    const discountAmount = (subtotal * couponDiscount) / 100;
+  [
+    selectCartSubtotal,
+    selectCartItems,
+    selectCouponDiscount,
+    selectShippingMethod,
+    selectCustomOfferVariantIds,
+    selectMembershipTier,
+  ],
+  (
+    subtotal,
+    items,
+    couponDiscount,
+    shippingMethod,
+    customOfferVariantIds,
+    membershipTier,
+  ) => {
+    const customOfferSubtotal = items
+      .filter((item) => customOfferVariantIds.includes(item.variantId))
+      .reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const customOfferDiscount = getCustomOfferDiscount(customOfferSubtotal);
+    const couponDiscountAmount = (subtotal * couponDiscount) / 100;
+    const customOfferDiscountAmount =
+      (customOfferSubtotal * customOfferDiscount) / 100;
+    const membershipDiscount = getMembershipDiscount(membershipTier);
+    // Membership applies to the remaining amount after Custom Offer discount.
+    const membershipBase = Math.max(0, subtotal - customOfferDiscountAmount);
+    const membershipDiscountAmount = (membershipBase * membershipDiscount) / 100;
+    const stackedDiscountAmount = customOfferDiscountAmount + membershipDiscountAmount;
+    const useCoupon = couponDiscountAmount > stackedDiscountAmount;
+    const discountAmount = useCoupon ? couponDiscountAmount : stackedDiscountAmount;
+    const discountSource = useCoupon
+      ? "coupon"
+      : customOfferDiscountAmount > 0 && membershipDiscountAmount > 0
+        ? "stacked"
+        : membershipDiscountAmount > 0
+          ? "membership"
+          : "custom-offer";
     const subtotalAfterDiscount = subtotal - discountAmount;
 
     let shipping = 0;
@@ -46,6 +86,13 @@ export const selectCartTotals = createSelector(
     return {
       subtotal: +subtotal.toFixed(2),
       discount: +discountAmount.toFixed(2),
+      discountSource,
+      customOfferSubtotal: +customOfferSubtotal.toFixed(2),
+      customOfferDiscount,
+      customOfferDiscountAmount: +customOfferDiscountAmount.toFixed(2),
+      membershipDiscount,
+      membershipDiscountAmount: +membershipDiscountAmount.toFixed(2),
+      membershipTier,
       subtotalAfterDiscount: +subtotalAfterDiscount.toFixed(2),
       shipping,
       tax,

@@ -5,7 +5,7 @@ import { FeaturedProductsSection } from "@/features/home/components/featured-pro
 import { ProductDetails } from "@/features/products/components/product-details";
 import { ProductReviews } from "@/features/products/components/product-reviews";
 import { RecentlyViewedSection } from "@/features/products/components/recently-viewed-section";
-import { SITE_CONFIG } from "@/lib/constants";
+import { CURRENCY, SITE_CONFIG } from "@/lib/constants";
 import {
   PRODUCTS,
   getProductBySlug,
@@ -59,7 +59,7 @@ export default async function ProductPage({ params }: PageProps) {
     offers: {
       "@type": "Offer",
       url: `${SITE_CONFIG.url}/product/${product.slug}`,
-      priceCurrency: product.currency,
+      priceCurrency: CURRENCY.code,
       price: product.price,
       availability:
         product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",

@@ -4,15 +4,19 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Eye, Heart, Scale, ShoppingBag } from "lucide-react";
+import { Eye, Gift, Heart, Scale, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
+import { ActionTooltip } from "@/components/shared/action-tooltip";
+import { StarRating } from "@/components/shared/star-rating";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StarRating } from "@/components/shared/star-rating";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addItem } from "@/lib/store/slices/cart-slice";
-import { toggleCompare } from "@/lib/store/slices/commerce-slice";
+import {
+  addToCustomOffer,
+  toggleCompare,
+} from "@/lib/store/slices/commerce-slice";
 import { setCartOpen } from "@/lib/store/slices/ui-slice";
 import { toggleWishlist } from "@/lib/store/slices/wishlist-slice";
 import { calculateDiscount, cn, formatCurrency } from "@/lib/utils";
@@ -35,6 +39,9 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
   );
   const discount = calculateDiscount(product.price, product.comparePrice);
   const inCompare = useAppSelector((s) => s.commerce.compareIds.includes(product.id));
+  const inCustomOffer = useAppSelector((s) =>
+    s.commerce.customOfferItems.some((item) => item.productId === product.id),
+  );
 
   const primaryImage = product.images[0];
   const secondaryImage = product.images[1] ?? product.images[0];
@@ -83,6 +90,9 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
     );
     toast.success(inWishlist ? "Removed from wishlist" : "Saved to wishlist");
   };
+
+  const iconBtnClass =
+    "grid h-9 w-9 place-items-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white";
 
   return (
     <motion.article
@@ -135,30 +145,61 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
             {discount > 0 && <Badge variant="accent">-{discount}%</Badge>}
           </div>
           <div className="pointer-events-auto flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={handleWishlist}
-              aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-              className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white"
+            <ActionTooltip
+              label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
             >
-              <Heart
-                className={cn(
-                  "h-4 w-4 transition-colors",
-                  inWishlist && "fill-rose-500 text-rose-500",
-                )}
-              />
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                dispatch(toggleCompare(product.id));
-                toast.success(inCompare ? "Removed from compare" : "Added to compare");
-              }}
-              aria-label={inCompare ? "Remove from compare" : "Add to compare"}
-              className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white"
+              <button
+                type="button"
+                onClick={handleWishlist}
+                aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                className={iconBtnClass}
+              >
+                <Heart
+                  className={cn(
+                    "h-4 w-4 transition-colors",
+                    inWishlist && "fill-rose-500 text-rose-500",
+                  )}
+                />
+              </button>
+            </ActionTooltip>
+
+            <ActionTooltip label={inCompare ? "Remove from compare" : "Compare products"}>
+              <button
+                type="button"
+                onClick={() => {
+                  dispatch(toggleCompare(product.id));
+                  toast.success(inCompare ? "Removed from compare" : "Added to compare");
+                }}
+                aria-label={inCompare ? "Remove from compare" : "Add to compare"}
+                className={iconBtnClass}
+              >
+                <Scale className={cn("h-4 w-4", inCompare && "text-accent")} />
+              </button>
+            </ActionTooltip>
+
+            <ActionTooltip
+              label={
+                inCustomOffer
+                  ? "Already in Custom Offer · tap to add more"
+                  : "Add to Custom Offer"
+              }
             >
-              <Scale className={cn("h-4 w-4", inCompare && "text-accent")} />
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  dispatch(addToCustomOffer(product.id));
+                  toast.success(
+                    inCustomOffer
+                      ? `${product.name} quantity increased`
+                      : `${product.name} added to Custom Offer`,
+                  );
+                }}
+                aria-label="Add to custom offer"
+                className={iconBtnClass}
+              >
+                <Gift className={cn("h-4 w-4", inCustomOffer && "fill-accent text-accent")} />
+              </button>
+            </ActionTooltip>
           </div>
         </div>
 
@@ -173,27 +214,53 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
                 className="hidden md:block"
               >
                 <div className="grid grid-cols-2 gap-2">
-                  <Button type="button" variant="secondary" onClick={() => setQuickViewOpen(true)}>
-                    <Eye className="h-4 w-4" />
-                    View
-                  </Button>
-                  <Button type="button" className="shadow-lg" onClick={handleQuickAdd}>
-                    <ShoppingBag className="h-4 w-4" />
-                    Add
-                  </Button>
+                  <ActionTooltip label="Quick view product details" side="top">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="w-full"
+                      onClick={() => setQuickViewOpen(true)}
+                    >
+                      <Eye className="h-4 w-4" />
+                      View
+                    </Button>
+                  </ActionTooltip>
+                  <ActionTooltip label="Add to shopping bag" side="top">
+                    <Button type="button" className="w-full shadow-lg" onClick={handleQuickAdd}>
+                      <ShoppingBag className="h-4 w-4" />
+                      Add
+                    </Button>
+                  </ActionTooltip>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
-          <Button
-            type="button"
-            size="sm"
-            className="w-full shadow-lg md:hidden"
-            onClick={handleQuickAdd}
-          >
-            <ShoppingBag className="h-4 w-4" />
-            Add
-          </Button>
+
+          <div className="grid grid-cols-2 gap-2 md:hidden">
+            <ActionTooltip label="Quick view product details" side="top">
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="w-full shadow-lg"
+                onClick={() => setQuickViewOpen(true)}
+              >
+                <Eye className="h-4 w-4" />
+                View
+              </Button>
+            </ActionTooltip>
+            <ActionTooltip label="Add to shopping bag" side="top">
+              <Button
+                type="button"
+                size="sm"
+                className="w-full shadow-lg"
+                onClick={handleQuickAdd}
+              >
+                <ShoppingBag className="h-4 w-4" />
+                Add
+              </Button>
+            </ActionTooltip>
+          </div>
         </div>
       </div>
 

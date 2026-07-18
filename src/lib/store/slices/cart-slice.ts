@@ -7,6 +7,7 @@ export interface CartState {
   couponCode: string | null;
   couponDiscount: number;
   shippingMethod: ShippingMethod;
+  customOfferVariantIds: string[];
 }
 
 export const CART_STORAGE_KEY = "luxe.cart.v1";
@@ -22,6 +23,7 @@ export const emptyCartState = (): CartState => ({
   couponCode: null,
   couponDiscount: 0,
   shippingMethod: "standard",
+  customOfferVariantIds: [],
 });
 
 export function loadCartFromStorage(): CartState | null {
@@ -34,6 +36,9 @@ export function loadCartFromStorage(): CartState | null {
       items: Array.isArray(parsed.items) ? parsed.items : [],
       couponCode: parsed.couponCode ?? null,
       couponDiscount: typeof parsed.couponDiscount === "number" ? parsed.couponDiscount : 0,
+      customOfferVariantIds: Array.isArray(parsed.customOfferVariantIds)
+        ? parsed.customOfferVariantIds
+        : [],
       shippingMethod:
         parsed.shippingMethod === "express" || parsed.shippingMethod === "standard"
           ? parsed.shippingMethod
@@ -87,12 +92,18 @@ const cartSlice = createSlice({
     removeItem(state, action: PayloadAction<{ id: string; variantId: string }>) {
       const { id, variantId } = action.payload;
       state.items = state.items.filter((i) => !(i.id === id && i.variantId === variantId));
+      if (!state.items.some((item) => item.variantId === variantId)) {
+        state.customOfferVariantIds = state.customOfferVariantIds.filter(
+          (candidate) => candidate !== variantId,
+        );
+      }
     },
     clearCart(state) {
       state.items = [];
       state.couponCode = null;
       state.couponDiscount = 0;
       state.shippingMethod = "standard";
+      state.customOfferVariantIds = [];
     },
     applyCoupon(state, action: PayloadAction<string>) {
       const code = action.payload.toUpperCase().trim();
@@ -112,6 +123,9 @@ const cartSlice = createSlice({
     setShippingMethod(state, action: PayloadAction<ShippingMethod>) {
       state.shippingMethod = action.payload;
     },
+    activateCustomOffer(state, action: PayloadAction<string[]>) {
+      state.customOfferVariantIds = [...new Set(action.payload)];
+    },
   },
 });
 
@@ -124,6 +138,7 @@ export const {
   applyCoupon,
   removeCoupon,
   setShippingMethod,
+  activateCustomOffer,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
