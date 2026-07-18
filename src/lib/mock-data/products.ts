@@ -1,5 +1,7 @@
 import type { Product } from "@/types";
 
+import { PRODUCT_IMAGES } from "./media";
+
 const baseColors = [
   { id: "color-black", name: "Onyx Black", hex: "#0f0f10" },
   { id: "color-white", name: "Ivory", hex: "#f5f1ea" },
@@ -73,24 +75,24 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-001-1",
-        url: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1200&q=80",
-        alt: "Milano cashmere coat front",
+        url: PRODUCT_IMAGES["p-001"][0],
+        alt: "front",
       },
       {
         id: "p-001-2",
-        url: "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1200&q=80",
-        alt: "Milano cashmere coat detail",
+        url: PRODUCT_IMAGES["p-001"][1],
+        alt: "detail",
       },
       {
         id: "p-001-3",
-        url: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=1200&q=80",
-        alt: "Milano cashmere coat lifestyle",
+        url: PRODUCT_IMAGES["p-001"][2],
+        alt: "lifestyle",
       },
       {
         id: "p-001-4",
-        url: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=1200&q=80",
-        alt: "Milano cashmere coat back",
-      },
+        url: PRODUCT_IMAGES["p-001"][3],
+        alt: "back",
+      }
     ],
     colors: [baseColors[0], baseColors[2], baseColors[4]],
     sizes: baseSizes,
@@ -130,19 +132,19 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-002-1",
-        url: "https://images.unsplash.com/photo-1614252369475-531eba835eb1?auto=format&fit=crop&w=1200&q=80",
-        alt: "Leather derby shoes",
+        url: PRODUCT_IMAGES["p-002"][0],
+        alt: "pair",
       },
       {
         id: "p-002-2",
-        url: "https://images.unsplash.com/photo-1531310197839-ccf54634509e?auto=format&fit=crop&w=1200&q=80",
-        alt: "Leather derby shoes side",
+        url: PRODUCT_IMAGES["p-002"][1],
+        alt: "side",
       },
       {
         id: "p-002-3",
-        url: "https://images.unsplash.com/photo-1582897085656-c636d006a246?auto=format&fit=crop&w=1200&q=80",
-        alt: "Leather derby shoes lifestyle",
-      },
+        url: PRODUCT_IMAGES["p-002"][2],
+        alt: "lifestyle",
+      }
     ],
     colors: [baseColors[0], baseColors[4]],
     sizes: shoeSizes,
@@ -183,19 +185,19 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-003-1",
-        url: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=1200&q=80",
-        alt: "Merino sweater on model",
+        url: PRODUCT_IMAGES["p-003"][0],
+        alt: "model",
       },
       {
         id: "p-003-2",
-        url: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=1200&q=80",
-        alt: "Merino sweater flat lay",
+        url: PRODUCT_IMAGES["p-003"][1],
+        alt: "flat lay",
       },
       {
         id: "p-003-3",
-        url: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=1200&q=80",
-        alt: "Merino sweater detail",
-      },
+        url: PRODUCT_IMAGES["p-003"][2],
+        alt: "knit detail",
+      }
     ],
     colors: [baseColors[1], baseColors[3], baseColors[5]],
     sizes: baseSizes,
@@ -235,19 +237,19 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-004-1",
-        url: "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=1200&q=80",
-        alt: "Soho leather tote",
+        url: PRODUCT_IMAGES["p-004"][0],
+        alt: "tote",
       },
       {
         id: "p-004-2",
-        url: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1200&q=80",
-        alt: "Leather tote with model",
+        url: PRODUCT_IMAGES["p-004"][1],
+        alt: "with model",
       },
       {
         id: "p-004-3",
-        url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1200&q=80",
-        alt: "Leather tote interior",
-      },
+        url: PRODUCT_IMAGES["p-004"][2],
+        alt: "interior",
+      }
     ],
     colors: [baseColors[0], baseColors[4], baseColors[2]],
     sizes: oneSize,
@@ -287,14 +289,19 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-005-1",
-        url: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1200&q=80",
-        alt: "Linen shirt on model",
+        url: PRODUCT_IMAGES["p-005"][0],
+        alt: "on model",
       },
       {
         id: "p-005-2",
-        url: "https://images.unsplash.com/photo-1593030103066-0093718efeb9?auto=format&fit=crop&w=1200&q=80",
-        alt: "Linen shirt flat",
+        url: PRODUCT_IMAGES["p-005"][1],
+        alt: "flat",
       },
+      {
+        id: "p-005-3",
+        url: PRODUCT_IMAGES["p-005"][2],
+        alt: "collar detail",
+      }
     ],
     colors: [baseColors[1], baseColors[2], baseColors[3]],
     sizes: baseSizes,
@@ -333,14 +340,14 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-006-1",
-        url: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=1200&q=80",
-        alt: "Aviator sunglasses",
+        url: PRODUCT_IMAGES["p-006"][0],
+        alt: "front",
       },
       {
         id: "p-006-2",
-        url: "https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&w=1200&q=80",
-        alt: "Aviator sunglasses on model",
-      },
+        url: PRODUCT_IMAGES["p-006"][1],
+        alt: "on model",
+      }
     ],
     colors: [baseColors[0], baseColors[4]],
     sizes: oneSize,
@@ -380,14 +387,19 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-007-1",
-        url: "https://images.unsplash.com/photo-1551803091-e20673f15770?auto=format&fit=crop&w=1200&q=80",
-        alt: "Silk slip dress on model",
+        url: PRODUCT_IMAGES["p-007"][0],
+        alt: "on model",
       },
       {
         id: "p-007-2",
-        url: "https://images.unsplash.com/photo-1495121605193-b116b5b9c5fe?auto=format&fit=crop&w=1200&q=80",
-        alt: "Silk slip dress detail",
+        url: PRODUCT_IMAGES["p-007"][1],
+        alt: "movement",
       },
+      {
+        id: "p-007-3",
+        url: PRODUCT_IMAGES["p-007"][2],
+        alt: "fabric drape",
+      }
     ],
     colors: [baseColors[0], baseColors[6]],
     sizes: baseSizes,
@@ -427,14 +439,14 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-008-1",
-        url: "https://images.unsplash.com/photo-1581101767113-1677fc2bf2e6?auto=format&fit=crop&w=1200&q=80",
-        alt: "Suede loafer",
+        url: PRODUCT_IMAGES["p-008"][0],
+        alt: "pair",
       },
       {
         id: "p-008-2",
-        url: "https://images.unsplash.com/photo-1605733513597-a8f8341084e6?auto=format&fit=crop&w=1200&q=80",
-        alt: "Suede loafer on foot",
-      },
+        url: PRODUCT_IMAGES["p-008"][1],
+        alt: "on foot",
+      }
     ],
     colors: [baseColors[0], baseColors[4], baseColors[3]],
     sizes: shoeSizes,
@@ -473,14 +485,19 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-009-1",
-        url: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=1200&q=80",
-        alt: "Merino tee on model",
+        url: PRODUCT_IMAGES["p-009"][0],
+        alt: "on model",
       },
       {
         id: "p-009-2",
-        url: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=1200&q=80",
-        alt: "Merino tee flat lay",
+        url: PRODUCT_IMAGES["p-009"][1],
+        alt: "folded",
       },
+      {
+        id: "p-009-3",
+        url: PRODUCT_IMAGES["p-009"][2],
+        alt: "neckline",
+      }
     ],
     colors: [baseColors[0], baseColors[1], baseColors[2], baseColors[5]],
     sizes: baseSizes,
@@ -519,14 +536,14 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-010-1",
-        url: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=1200&q=80",
-        alt: "Ceramic mug set",
+        url: PRODUCT_IMAGES["p-010"][0],
+        alt: "set",
       },
       {
         id: "p-010-2",
-        url: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=1200&q=80",
-        alt: "Mug lifestyle shot",
-      },
+        url: PRODUCT_IMAGES["p-010"][1],
+        alt: "table lifestyle",
+      }
     ],
     colors: [baseColors[1], baseColors[2]],
     sizes: oneSize,
@@ -565,14 +582,14 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-011-1",
-        url: "https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?auto=format&fit=crop&w=1200&q=80",
-        alt: "Pearl earrings",
+        url: PRODUCT_IMAGES["p-011"][0],
+        alt: "pair",
       },
       {
         id: "p-011-2",
-        url: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1200&q=80",
-        alt: "Pearl earrings on model",
-      },
+        url: PRODUCT_IMAGES["p-011"][1],
+        alt: "worn",
+      }
     ],
     colors: [baseColors[1]],
     sizes: oneSize,
@@ -606,14 +623,19 @@ export const PRODUCTS: Product[] = [
     images: [
       {
         id: "p-012-1",
-        url: "https://images.unsplash.com/photo-1547949003-9792a18a2601?auto=format&fit=crop&w=1200&q=80",
-        alt: "Down parka on model",
+        url: PRODUCT_IMAGES["p-012"][0],
+        alt: "on model",
       },
       {
         id: "p-012-2",
-        url: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=1200&q=80",
-        alt: "Down parka detail",
+        url: PRODUCT_IMAGES["p-012"][1],
+        alt: "shell detail",
       },
+      {
+        id: "p-012-3",
+        url: PRODUCT_IMAGES["p-012"][2],
+        alt: "collection",
+      }
     ],
     colors: [baseColors[0], baseColors[3], baseColors[5]],
     sizes: baseSizes,

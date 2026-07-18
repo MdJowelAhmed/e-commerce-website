@@ -1,13 +1,14 @@
 import type { Category } from "@/types";
 
+import { SITE_IMAGES } from "./media";
+
 export const CATEGORIES: Category[] = [
   {
     id: "cat-women",
     slug: "women",
     name: "Women",
     description: "Curated essentials and statement pieces for the modern woman.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: SITE_IMAGES.catWomen,
     productCount: 124,
     featured: true,
   },
@@ -16,8 +17,7 @@ export const CATEGORIES: Category[] = [
     slug: "men",
     name: "Men",
     description: "Refined tailoring meets contemporary streetwear.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: SITE_IMAGES.catMen,
     productCount: 98,
     featured: true,
   },
@@ -26,8 +26,7 @@ export const CATEGORIES: Category[] = [
     slug: "accessories",
     name: "Accessories",
     description: "Finishing touches: bags, jewelry, eyewear and more.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: SITE_IMAGES.catAccessories,
     productCount: 76,
     featured: true,
   },
@@ -36,8 +35,7 @@ export const CATEGORIES: Category[] = [
     slug: "shoes",
     name: "Footwear",
     description: "Hand-finished footwear designed for every occasion.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: SITE_IMAGES.catShoes,
     productCount: 64,
     featured: true,
   },
@@ -46,8 +44,7 @@ export const CATEGORIES: Category[] = [
     slug: "home",
     name: "Home",
     description: "Considered objects to elevate your space.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: SITE_IMAGES.catHome,
     productCount: 42,
   },
   {
@@ -55,8 +52,7 @@ export const CATEGORIES: Category[] = [
     slug: "beauty",
     name: "Beauty",
     description: "Clean, considered beauty rituals.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1522335789203-aaa2f6f5b026?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: SITE_IMAGES.catBeauty,
     productCount: 36,
   },
 ];

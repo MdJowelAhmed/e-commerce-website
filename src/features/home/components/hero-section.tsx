@@ -8,13 +8,11 @@ import { ArrowRight, Sparkles, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trackExperimentEvent, useExperiment } from "@/hooks/use-experiment";
+import { SITE_IMAGES } from "@/lib/mock-data/media";
 
-const HERO_IMAGE_LEFT =
-  "https://images.unsplash.com/photo-1495121605193-b116b5b9c5fe?auto=format&fit=crop&w=900&q=80";
-const HERO_IMAGE_RIGHT =
-  "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80";
-const HERO_BG =
-  "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1600&q=80";
+const HERO_IMAGE_LEFT = SITE_IMAGES.heroLeft;
+const HERO_IMAGE_RIGHT = SITE_IMAGES.heroRight;
+const HERO_BG = SITE_IMAGES.heroBg;
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
@@ -106,10 +104,11 @@ export function HeroSection() {
               {[1, 2, 3, 4].map((i) => (
                 <Image
                   key={i}
-                  src={`https://api.dicebear.com/9.x/avataaars/svg?seed=hero${i}`}
+                  src={`https://api.dicebear.com/9.x/avataaars/png?seed=hero${i}&size=72`}
                   alt=""
                   width={36}
                   height={36}
+                  unoptimized
                   className="h-9 w-9 rounded-full border-2 border-background bg-secondary"
                 />
               ))}

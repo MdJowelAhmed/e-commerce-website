@@ -1,8 +1,11 @@
+const path = require("path");
+
 /** @type {import('postcss-load-config').Config} */
 module.exports = {
   plugins: {
     tailwindcss: {
-      config: "./tailwind.config.js",
+      // Absolute path avoids Windows issues with spaces in the project folder name.
+      config: path.join(__dirname, "tailwind.config.js"),
     },
     autoprefixer: {},
   },

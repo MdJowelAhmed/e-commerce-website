@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SITE_IMAGES } from "@/lib/mock-data/media";
 
 export function PromoSection() {
   return (
@@ -17,7 +18,7 @@ export function PromoSection() {
           eyebrow="The new"
           title="Spring layering"
           subtitle="Featherlight knits and breezy linens, just in."
-          imageUrl="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80"
+          imageUrl={SITE_IMAGES.promoSpring}
           tall
         />
         <div className="grid gap-4">
@@ -26,14 +27,14 @@ export function PromoSection() {
             eyebrow="Up to 30% off"
             title="Mid-season edit"
             subtitle="A curated selection of pieces at a moment."
-            imageUrl="https://images.unsplash.com/photo-1551803091-e20673f15770?auto=format&fit=crop&w=1200&q=80"
+            imageUrl={SITE_IMAGES.promoSale}
           />
           <PromoCard
             href="/products?category=accessories"
             eyebrow="Accessories"
             title="The finishing touch"
             subtitle="Bags, jewelry and small leather goods."
-            imageUrl="https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=1200&q=80"
+            imageUrl={SITE_IMAGES.promoAccessories}
           />
         </div>
         <PromoCard
@@ -41,7 +42,7 @@ export function PromoSection() {
           eyebrow="Footwear"
           title="Built to last"
           subtitle="Hand-finished leathers, made the old way."
-          imageUrl="https://images.unsplash.com/photo-1614252369475-531eba835eb1?auto=format&fit=crop&w=1200&q=80"
+          imageUrl={SITE_IMAGES.promoShoes}
           tall
         />
       </div>

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Award, Globe, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { SITE_IMAGES } from "@/lib/mock-data/media";
 
 const VALUES = [
   {
@@ -50,8 +51,8 @@ export default function AboutPage() {
         className="relative mt-12 aspect-[16/8] overflow-hidden rounded-3xl"
       >
         <Image
-          src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=80"
-          alt=""
+          src={SITE_IMAGES.about}
+          alt="Modern fabric atelier"
           fill
           sizes="100vw"
           className="object-cover"

@@ -1,11 +1,13 @@
 import type { Customer, Order } from "@/types";
 
+import { PRODUCT_IMAGES } from "./media";
+
 export const CUSTOMERS: Customer[] = [
   {
     id: "c-001",
     name: "Amelia Rivers",
     email: "amelia@example.com",
-    avatarUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=Amelia",
+    avatarUrl: "https://api.dicebear.com/9.x/avataaars/png?seed=Amelia",
     totalOrders: 12,
     totalSpent: 4280,
     status: "active",
@@ -15,7 +17,7 @@ export const CUSTOMERS: Customer[] = [
     id: "c-002",
     name: "James Kessler",
     email: "james@example.com",
-    avatarUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=James",
+    avatarUrl: "https://api.dicebear.com/9.x/avataaars/png?seed=James",
     totalOrders: 6,
     totalSpent: 1890,
     status: "active",
@@ -25,7 +27,7 @@ export const CUSTOMERS: Customer[] = [
     id: "c-003",
     name: "Sofia Chen",
     email: "sofia@example.com",
-    avatarUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=Sofia",
+    avatarUrl: "https://api.dicebear.com/9.x/avataaars/png?seed=Sofia",
     totalOrders: 18,
     totalSpent: 7240,
     status: "active",
@@ -35,7 +37,7 @@ export const CUSTOMERS: Customer[] = [
     id: "c-004",
     name: "Marcus Wright",
     email: "marcus@example.com",
-    avatarUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=Marcus",
+    avatarUrl: "https://api.dicebear.com/9.x/avataaars/png?seed=Marcus",
     totalOrders: 3,
     totalSpent: 612,
     status: "inactive",
@@ -45,7 +47,7 @@ export const CUSTOMERS: Customer[] = [
     id: "c-005",
     name: "Priya Patel",
     email: "priya@example.com",
-    avatarUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=Priya",
+    avatarUrl: "https://api.dicebear.com/9.x/avataaars/png?seed=Priya",
     totalOrders: 9,
     totalSpent: 3120,
     status: "active",
@@ -64,8 +66,7 @@ export const ORDERS: Order[] = [
         productId: "p-001",
         productSlug: "milano-cashmere-coat",
         name: "Milano Cashmere Coat",
-        imageUrl:
-          "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=600&q=80",
+        imageUrl: PRODUCT_IMAGES["p-001"][0],
         price: 489,
         quantity: 1,
         variantId: "p-001-color-black-size-m",
@@ -108,8 +109,7 @@ export const ORDERS: Order[] = [
         productId: "p-002",
         productSlug: "luca-leather-derby",
         name: "Luca Leather Derby",
-        imageUrl:
-          "https://images.unsplash.com/photo-1614252369475-531eba835eb1?auto=format&fit=crop&w=600&q=80",
+        imageUrl: PRODUCT_IMAGES["p-002"][0],
         price: 349,
         quantity: 1,
         variantId: "p-002-color-black-size-9",
@@ -152,8 +152,7 @@ export const ORDERS: Order[] = [
         productId: "p-004",
         productSlug: "soho-leather-tote",
         name: "Soho Leather Tote",
-        imageUrl:
-          "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=600&q=80",
+        imageUrl: PRODUCT_IMAGES["p-004"][0],
         price: 289,
         quantity: 1,
         variantId: "p-004-color-black-size-one",
@@ -168,8 +167,7 @@ export const ORDERS: Order[] = [
         productId: "p-011",
         productSlug: "selene-pearl-earrings",
         name: "Selene Pearl Earrings",
-        imageUrl:
-          "https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?auto=format&fit=crop&w=600&q=80",
+        imageUrl: PRODUCT_IMAGES["p-011"][0],
         price: 119,
         quantity: 1,
         variantId: "p-011-color-white-size-one",
@@ -211,8 +209,7 @@ export const ORDERS: Order[] = [
         productId: "p-007",
         productSlug: "noir-silk-slip-dress",
         name: "Noir Silk Slip Dress",
-        imageUrl:
-          "https://images.unsplash.com/photo-1551803091-e20673f15770?auto=format&fit=crop&w=600&q=80",
+        imageUrl: PRODUCT_IMAGES["p-007"][0],
         price: 259,
         quantity: 2,
         variantId: "p-007-color-black-size-s",
