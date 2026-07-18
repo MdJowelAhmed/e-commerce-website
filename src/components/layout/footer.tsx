@@ -3,7 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Facebook, Instagram, Loader2, Mail, Twitter, Youtube } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  Loader2,
+  Mail,
+  MessageCircle,
+  Phone,
+  Twitter,
+  Youtube,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +24,7 @@ export function Footer() {
   return (
     <footer className="border-t bg-secondary/40">
       <NewsletterBlock />
-      <div className="container-wide grid gap-10 py-14 lg:grid-cols-[1.4fr_repeat(4,minmax(0,1fr))]">
+      <div className="container-wide grid gap-10 py-14 lg:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))]">
         <div>
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-foreground text-background">
@@ -28,15 +37,35 @@ export function Footer() {
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             {SITE_CONFIG.description}
           </p>
+
+          <div className="mt-5 space-y-2">
+            <a
+              href={SITE_CONFIG.social.whatsapp}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1ebe57]"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Connect WhatsApp
+            </a>
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Phone className="h-3.5 w-3.5" />
+              {SITE_CONFIG.contact.phoneDisplay}
+            </p>
+          </div>
+
           <div className="mt-5 flex gap-1">
+            <SocialLink href={SITE_CONFIG.social.whatsapp} label="WhatsApp">
+              <MessageCircle className="h-4 w-4" />
+            </SocialLink>
+            <SocialLink href={SITE_CONFIG.social.facebook} label="Facebook">
+              <Facebook className="h-4 w-4" />
+            </SocialLink>
             <SocialLink href={SITE_CONFIG.social.instagram} label="Instagram">
               <Instagram className="h-4 w-4" />
             </SocialLink>
             <SocialLink href={SITE_CONFIG.social.twitter} label="Twitter">
               <Twitter className="h-4 w-4" />
-            </SocialLink>
-            <SocialLink href={SITE_CONFIG.social.facebook} label="Facebook">
-              <Facebook className="h-4 w-4" />
             </SocialLink>
             <SocialLink href={SITE_CONFIG.social.youtube} label="YouTube">
               <Youtube className="h-4 w-4" />
@@ -48,7 +77,7 @@ export function Footer() {
             <h4 className="text-sm font-semibold">{heading}</h4>
             <ul className="mt-4 space-y-2 text-sm">
               {links.map((link) => (
-                <li key={link.href}>
+                <li key={`${heading}-${link.href}-${link.label}`}>
                   <Link
                     href={link.href}
                     className="text-muted-foreground transition-colors hover:text-foreground"
@@ -63,9 +92,11 @@ export function Footer() {
       </div>
       <div className="border-t">
         <div className="container-wide flex flex-col items-center justify-between gap-2 py-5 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.</p>
           <p>
-            Crafted with care · {SITE_CONFIG.contact.email}
+            © {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.
+          </p>
+          <p>
+            WhatsApp {SITE_CONFIG.contact.phoneDisplay} · {SITE_CONFIG.contact.email}
           </p>
         </div>
       </div>

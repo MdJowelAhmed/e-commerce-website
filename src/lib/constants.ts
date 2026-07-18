@@ -6,12 +6,15 @@ export const SITE_CONFIG = {
   url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   contact: {
     email: "support@luxe.example",
-    phone: "+1 (555) 010-2024",
+    phone: "01518792559",
+    phoneDisplay: "01518-792559",
+    whatsapp: "8801518792559",
   },
   social: {
-    twitter: "https://twitter.com/",
+    whatsapp: "https://wa.me/8801518792559",
+    facebook: "https://www.facebook.com/",
     instagram: "https://instagram.com/",
-    facebook: "https://facebook.com/",
+    twitter: "https://twitter.com/",
     youtube: "https://youtube.com/",
   },
 } as const;
