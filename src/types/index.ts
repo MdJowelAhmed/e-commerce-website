@@ -37,6 +37,7 @@ export interface Review {
   id: string;
   author: string;
   avatarUrl?: string;
+  imageUrls?: string[];
   rating: number;
   title: string;
   body: string;
@@ -185,4 +186,20 @@ export interface Paginated<T> {
   page: number;
   perPage: number;
   totalPages: number;
+}
+
+export interface StockAlert {
+  productId: string;
+  variantId: string;
+  email: string;
+  createdAt: string;
+}
+
+export interface ReturnRequest {
+  id: string;
+  orderId: string;
+  reason: string;
+  details?: string;
+  status: "submitted" | "approved" | "received" | "refunded";
+  createdAt: string;
 }

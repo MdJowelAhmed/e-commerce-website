@@ -15,10 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { loginSchema, type LoginFormValues } from "@/features/auth/schemas";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { signInAndSync } from "@/lib/store/slices/commerce-slice";
 import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const guestItemCount = useAppSelector((state) => state.cart.items.length);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -36,8 +40,13 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     setLoading(true);
     await new Promise((r) => setTimeout(r, 900));
+    dispatch(signInAndSync(data.email));
     setLoading(false);
-    toast.success(`Welcome back, ${data.email.split("@")[0]}!`);
+    toast.success(
+      guestItemCount > 0
+        ? `Signed in — ${guestItemCount} guest bag item(s) synced`
+        : `Welcome back, ${data.email.split("@")[0]}!`,
+    );
     router.push("/");
   };
 

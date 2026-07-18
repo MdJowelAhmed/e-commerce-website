@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/footer";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { Navbar } from "@/components/layout/navbar";
 import { SearchDialog } from "@/components/layout/search-dialog";
+import { AbandonedCartTracker } from "@/features/cart/components/abandoned-cart-tracker";
 
 export default function ShopLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,6 +16,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
       <CartDrawer />
       <MobileMenu />
       <SearchDialog />
+      <AbandonedCartTracker />
     </div>
   );
 }

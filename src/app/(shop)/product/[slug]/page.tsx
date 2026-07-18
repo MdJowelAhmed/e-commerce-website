@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { FeaturedProductsSection } from "@/features/home/components/featured-products-section";
 import { ProductDetails } from "@/features/products/components/product-details";
 import { ProductReviews } from "@/features/products/components/product-reviews";
+import { RecentlyViewedSection } from "@/features/products/components/recently-viewed-section";
+import { SITE_CONFIG } from "@/lib/constants";
 import {
   PRODUCTS,
   getProductBySlug,
@@ -41,11 +43,38 @@ export default async function ProductPage({ params }: PageProps) {
 
   const reviews = getReviewsForProduct(product.id);
   const related = getRelatedProducts(product.slug, 4);
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.shortDescription,
+    image: product.images.map((image) => image.url),
+    sku: product.variants[0]?.sku ?? product.id,
+    brand: { "@type": "Brand", name: product.brand },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: product.rating,
+      reviewCount: product.reviewCount,
+    },
+    offers: {
+      "@type": "Offer",
+      url: `${SITE_CONFIG.url}/product/${product.slug}`,
+      priceCurrency: product.currency,
+      price: product.price,
+      availability:
+        product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    },
+  };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c") }}
+      />
       <ProductDetails product={product} />
       <ProductReviews
+        productId={product.id}
         reviews={reviews}
         rating={product.rating}
         reviewCount={product.reviewCount}
@@ -60,6 +89,7 @@ export default async function ProductPage({ params }: PageProps) {
           ctaHref="/products"
         />
       )}
+      <RecentlyViewedSection products={PRODUCTS} currentProductId={product.id} />
     </>
   );
 }

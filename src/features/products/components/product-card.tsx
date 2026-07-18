@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Heart, ShoppingBag } from "lucide-react";
+import { Eye, Heart, Scale, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -12,10 +12,13 @@ import { Button } from "@/components/ui/button";
 import { StarRating } from "@/components/shared/star-rating";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addItem } from "@/lib/store/slices/cart-slice";
+import { toggleCompare } from "@/lib/store/slices/commerce-slice";
 import { setCartOpen } from "@/lib/store/slices/ui-slice";
 import { toggleWishlist } from "@/lib/store/slices/wishlist-slice";
 import { calculateDiscount, cn, formatCurrency } from "@/lib/utils";
 import type { Product } from "@/types";
+
+import { QuickViewDialog } from "./quick-view-dialog";
 
 interface ProductCardProps {
   product: Product;
@@ -26,10 +29,12 @@ interface ProductCardProps {
 export function ProductCard({ product, priority, index = 0 }: ProductCardProps) {
   const dispatch = useAppDispatch();
   const [hovered, setHovered] = useState(false);
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
   const inWishlist = useAppSelector((s) =>
     s.wishlist.items.some((i) => i.productId === product.id),
   );
   const discount = calculateDiscount(product.price, product.comparePrice);
+  const inCompare = useAppSelector((s) => s.commerce.compareIds.includes(product.id));
 
   const primaryImage = product.images[0];
   const secondaryImage = product.images[1] ?? product.images[0];
@@ -129,19 +134,32 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
             {product.isNew && <Badge>New</Badge>}
             {discount > 0 && <Badge variant="accent">-{discount}%</Badge>}
           </div>
-          <button
-            type="button"
-            onClick={handleWishlist}
-            aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-            className="pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white"
-          >
-            <Heart
-              className={cn(
-                "h-4 w-4 transition-colors",
-                inWishlist && "fill-rose-500 text-rose-500",
-              )}
-            />
-          </button>
+          <div className="pointer-events-auto flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={handleWishlist}
+              aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+              className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white"
+            >
+              <Heart
+                className={cn(
+                  "h-4 w-4 transition-colors",
+                  inWishlist && "fill-rose-500 text-rose-500",
+                )}
+              />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                dispatch(toggleCompare(product.id));
+                toast.success(inCompare ? "Removed from compare" : "Added to compare");
+              }}
+              aria-label={inCompare ? "Remove from compare" : "Add to compare"}
+              className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white"
+            >
+              <Scale className={cn("h-4 w-4", inCompare && "text-accent")} />
+            </button>
+          </div>
         </div>
 
         <div className="absolute inset-x-3 bottom-3 z-10">
@@ -154,10 +172,16 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
                 transition={{ duration: 0.25 }}
                 className="hidden md:block"
               >
-                <Button type="button" className="w-full shadow-lg" onClick={handleQuickAdd}>
-                  <ShoppingBag className="h-4 w-4" />
-                  Quick add
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button type="button" variant="secondary" onClick={() => setQuickViewOpen(true)}>
+                    <Eye className="h-4 w-4" />
+                    View
+                  </Button>
+                  <Button type="button" className="shadow-lg" onClick={handleQuickAdd}>
+                    <ShoppingBag className="h-4 w-4" />
+                    Add
+                  </Button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -207,6 +231,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
           </div>
         </div>
       </div>
+      <QuickViewDialog product={product} open={quickViewOpen} onOpenChange={setQuickViewOpen} />
     </motion.article>
   );
 }

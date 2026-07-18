@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Heart, Menu, Search, ShoppingBag, User } from "lucide-react";
+import { Award, Heart, Menu, Scale, Search, ShoppingBag, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
@@ -13,6 +13,8 @@ import { selectCartCount, selectWishlistItems } from "@/lib/store/selectors";
 import { setCartOpen, setMobileMenuOpen, setSearchOpen } from "@/lib/store/slices/ui-slice";
 import { cn } from "@/lib/utils";
 
+import { ThemeToggle } from "./theme-toggle";
+
 export function Navbar() {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
@@ -20,6 +22,7 @@ export function Navbar() {
   const [hydrated, setHydrated] = useState(false);
   const cartCount = useAppSelector(selectCartCount);
   const wishlist = useAppSelector(selectWishlistItems);
+  const compareCount = useAppSelector((state) => state.commerce.compareIds.length);
 
   useEffect(() => {
     setHydrated(true);
@@ -100,6 +103,7 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-1">
+          <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
@@ -111,6 +115,21 @@ export function Navbar() {
           <Button variant="ghost" size="icon" asChild aria-label="Account">
             <Link href="/login">
               <User className="h-5 w-5" />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild aria-label="Rewards" className="hidden sm:inline-flex">
+            <Link href="/rewards">
+              <Award className="h-5 w-5" />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild className="relative" aria-label="Compare">
+            <Link href="/compare">
+              <Scale className="h-5 w-5" />
+              {hydrated && compareCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-foreground">
+                  {compareCount}
+                </span>
+              )}
             </Link>
           </Button>
           <Button variant="ghost" size="icon" asChild className="relative" aria-label="Wishlist">

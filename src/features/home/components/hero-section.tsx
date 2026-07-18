@@ -7,6 +7,7 @@ import { ArrowRight, Sparkles, Star } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { trackExperimentEvent, useExperiment } from "@/hooks/use-experiment";
 
 const HERO_IMAGE_LEFT =
   "https://images.unsplash.com/photo-1495121605193-b116b5b9c5fe?auto=format&fit=crop&w=900&q=80";
@@ -18,6 +19,7 @@ const HERO_BG =
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
 export function HeroSection() {
+  const variant = useExperiment("home-hero-cta");
   const { scrollY } = useScroll();
   const bgY = useTransform(scrollY, [0, 500], [0, 120]);
   const fgY = useTransform(scrollY, [0, 500], [0, -40]);
@@ -49,12 +51,14 @@ export function HeroSection() {
         >
           <Badge variant="soft" className="gap-1.5">
             <Sparkles className="h-3 w-3 text-accent" />
-            Spring 2026 Collection
+            {variant === "A" ? "Summer 2026 Collection" : "Limited pieces · Bangladesh"}
           </Badge>
           <h1 className="mt-5 font-display text-5xl tracking-tight text-balance md:text-6xl lg:text-7xl">
-            Quietly{" "}
-            <span className="italic text-gradient-accent">extraordinary</span>{" "}
-            things.
+            {variant === "A" ? (
+              <>Quietly <span className="italic text-gradient-accent">extraordinary</span> things.</>
+            ) : (
+              <>Find your next <span className="italic text-gradient-accent">signature</span> piece.</>
+            )}
           </h1>
           <p className="mt-5 max-w-md text-base text-muted-foreground md:text-lg">
             A curated edit of contemporary essentials and statement pieces — designed to be worn,
@@ -74,8 +78,11 @@ export function HeroSection() {
               variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
             >
               <Button asChild size="xl">
-                <Link href="/products">
-                  Shop the collection
+                <Link
+                  href="/products"
+                  onClick={() => trackExperimentEvent("home-hero-cta", variant, "primary-click")}
+                >
+                  {variant === "A" ? "Shop the collection" : "Explore best sellers"}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>

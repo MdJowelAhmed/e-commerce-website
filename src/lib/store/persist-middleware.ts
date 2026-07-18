@@ -1,6 +1,10 @@
 import { type Middleware } from "@reduxjs/toolkit";
 
 import { saveCartToStorage, type CartState } from "./slices/cart-slice";
+import {
+  saveCommerceToStorage,
+  type CommerceState,
+} from "./slices/commerce-slice";
 import { saveWishlistToStorage, type WishlistState } from "./slices/wishlist-slice";
 
 /**
@@ -15,6 +19,9 @@ export const persistMiddleware: Middleware = (store) => (next) => (action) => {
   }
   if (type.startsWith("wishlist/") && type !== "wishlist/hydrateWishlist") {
     saveWishlistToStorage(store.getState().wishlist as WishlistState);
+  }
+  if (type.startsWith("commerce/") && type !== "commerce/hydrateCommerce") {
+    saveCommerceToStorage(store.getState().commerce as CommerceState);
   }
 
   return result;

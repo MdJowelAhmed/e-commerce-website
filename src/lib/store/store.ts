@@ -5,12 +5,14 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistMiddleware } from "./persist-middleware";
 import { api } from "./services/api";
 import cartReducer from "./slices/cart-slice";
+import commerceReducer from "./slices/commerce-slice";
 import uiReducer from "./slices/ui-slice";
 import wishlistReducer from "./slices/wishlist-slice";
 
 export const rootReducer = combineReducers({
   ui: uiReducer,
   cart: cartReducer,
+  commerce: commerceReducer,
   wishlist: wishlistReducer,
   [api.reducerPath]: api.reducer,
 });

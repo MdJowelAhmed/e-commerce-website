@@ -137,14 +137,18 @@ export default function OrdersPage() {
                       </div>
                     ))}
                   </div>
-                  {order.trackingNumber && (
-                    <Link
-                      href="#"
-                      className="text-xs font-medium text-foreground/80 underline underline-offset-2 hover:text-foreground"
-                    >
-                      Track: {order.trackingNumber}
-                    </Link>
-                  )}
+                  <div className="flex gap-4">
+                    {order.status === "delivered" && (
+                      <Link href="/returns" className="text-xs font-medium underline underline-offset-2">
+                        Return items
+                      </Link>
+                    )}
+                    {order.trackingNumber && (
+                      <span className="text-xs font-medium text-foreground/80">
+                        Track: {order.trackingNumber}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </motion.article>
             );

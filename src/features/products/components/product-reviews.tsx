@@ -1,40 +1,102 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, MessageSquare } from "lucide-react";
+import { Camera, CheckCircle2, MessageSquare, Star } from "lucide-react";
+import { toast } from "sonner";
 
 import { StarRating } from "@/components/shared/star-rating";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { formatDate } from "@/lib/utils";
 import type { Review } from "@/types";
 
 interface ProductReviewsProps {
+  productId: string;
   reviews: Review[];
   rating: number;
   reviewCount: number;
 }
 
-export function ProductReviews({ reviews, rating, reviewCount }: ProductReviewsProps) {
+export function ProductReviews({ productId, reviews, rating, reviewCount }: ProductReviewsProps) {
   const [expanded, setExpanded] = useState(false);
+  const [writeOpen, setWriteOpen] = useState(false);
+  const [localReviews, setLocalReviews] = useState(reviews);
+  const [form, setForm] = useState({ author: "", title: "", body: "", rating: 5 });
+  const [photos, setPhotos] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(
+        window.localStorage.getItem(`luxe.reviews.${productId}`) ?? "[]",
+      ) as Review[];
+      if (Array.isArray(saved) && saved.length > 0) setLocalReviews([...saved, ...reviews]);
+    } catch {
+      // Keep server reviews when local demo data is unavailable.
+    }
+  }, [productId, reviews]);
 
   const distribution = useMemo(() => {
     const buckets: Record<1 | 2 | 3 | 4 | 5, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    reviews.forEach((r) => {
+    localReviews.forEach((r) => {
       const key = Math.round(r.rating) as 1 | 2 | 3 | 4 | 5;
       buckets[key] = (buckets[key] ?? 0) + 1;
     });
-    const total = reviews.length || 1;
+    const total = localReviews.length || 1;
     return ([5, 4, 3, 2, 1] as const).map((star) => ({
       star,
       count: buckets[star] ?? 0,
       percent: ((buckets[star] ?? 0) / total) * 100,
     }));
-  }, [reviews]);
+  }, [localReviews]);
 
-  const visible = expanded ? reviews : reviews.slice(0, 3);
+  const visible = expanded ? localReviews : localReviews.slice(0, 3);
+
+  const submitReview = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!form.author.trim() || !form.title.trim() || form.body.trim().length < 10) {
+      toast.error("Please complete the review form");
+      return;
+    }
+    const review: Review = {
+        id: `local-${Date.now()}`,
+        author: form.author.trim(),
+        title: form.title.trim(),
+        body: form.body.trim(),
+        rating: form.rating,
+        imageUrls: photos,
+        createdAt: new Date().toISOString(),
+      };
+    setLocalReviews((current) => [review, ...current]);
+    try {
+      const key = `luxe.reviews.${productId}`;
+      const saved = JSON.parse(window.localStorage.getItem(key) ?? "[]") as Review[];
+      window.localStorage.setItem(key, JSON.stringify([review, ...saved].slice(0, 10)));
+    } catch {
+      toast.info("Review added for this session; photos were too large to persist");
+    }
+    setWriteOpen(false);
+    setForm({ author: "", title: "", body: "", rating: 5 });
+    setPhotos([]);
+    toast.success("Review submitted for moderation");
+  };
+
+  const loadPhotos = (files: FileList | null) => {
+    if (!files) return;
+    Array.from(files)
+      .slice(0, 3)
+      .forEach((file) => {
+        if (!file.type.startsWith("image/") || file.size > 2_000_000) return;
+        const reader = new FileReader();
+        reader.onload = () =>
+          setPhotos((current) => [...current, String(reader.result)].slice(0, 3));
+        reader.readAsDataURL(file);
+      });
+  };
 
   return (
     <section className="container-wide border-t py-12 lg:py-16">
@@ -54,6 +116,9 @@ export function ProductReviews({ reviews, rating, reviewCount }: ProductReviewsP
             <StarRating value={rating} size="md" />
             <span className="text-xs text-muted-foreground">{reviewCount} reviews</span>
           </div>
+          <Button variant="outline" className="mt-5" onClick={() => setWriteOpen(true)}>
+            Write a review
+          </Button>
           <div className="mt-6 space-y-2">
             {distribution.map(({ star, count, percent }) => (
               <div key={star} className="flex items-center gap-3 text-xs">
@@ -66,7 +131,7 @@ export function ProductReviews({ reviews, rating, reviewCount }: ProductReviewsP
         </motion.div>
 
         <div className="space-y-6">
-          {reviews.length === 0 ? (
+          {localReviews.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -78,7 +143,7 @@ export function ProductReviews({ reviews, rating, reviewCount }: ProductReviewsP
               <p className="text-sm text-muted-foreground">
                 Share your thoughts with other shoppers.
               </p>
-              <Button variant="outline" className="mt-2">
+              <Button variant="outline" className="mt-2" onClick={() => setWriteOpen(true)}>
                 Write a review
               </Button>
             </motion.div>
@@ -124,13 +189,22 @@ export function ProductReviews({ reviews, rating, reviewCount }: ProductReviewsP
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                       {review.body}
                     </p>
+                    {review.imageUrls && review.imageUrls.length > 0 && (
+                      <div className="mt-4 flex gap-2">
+                        {review.imageUrls.map((url, index) => (
+                          <div key={`${review.id}-${index}`} className="relative h-20 w-20 overflow-hidden rounded-lg bg-secondary">
+                            <Image src={url} alt={`Review photo ${index + 1}`} fill unoptimized className="object-cover" />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </motion.article>
               ))}
-              {reviews.length > 3 && (
+              {localReviews.length > 3 && (
                 <div className="text-center">
                   <Button variant="outline" onClick={() => setExpanded((v) => !v)}>
-                    {expanded ? "Show less" : `Show ${reviews.length - 3} more reviews`}
+                    {expanded ? "Show less" : `Show ${localReviews.length - 3} more reviews`}
                   </Button>
                 </div>
               )}
@@ -138,6 +212,52 @@ export function ProductReviews({ reviews, rating, reviewCount }: ProductReviewsP
           )}
         </div>
       </div>
+      <Dialog open={writeOpen} onOpenChange={setWriteOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogTitle className="font-display text-2xl">Write a review</DialogTitle>
+          <form onSubmit={submitReview} className="space-y-4">
+            <div>
+              <p className="mb-2 text-sm font-medium">Your rating</p>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setForm((current) => ({ ...current, rating: value }))}
+                    aria-label={`${value} stars`}
+                  >
+                    <Star className={`h-6 w-6 ${value <= form.rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`} />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <Input
+              value={form.author}
+              onChange={(event) => setForm((current) => ({ ...current, author: event.target.value }))}
+              placeholder="Your name"
+            />
+            <Input
+              value={form.title}
+              onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+              placeholder="Review title"
+            />
+            <textarea
+              value={form.body}
+              onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))}
+              placeholder="What did you like? How was the fit?"
+              rows={4}
+              className="w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed p-4 text-sm text-muted-foreground hover:bg-secondary">
+              <Camera className="h-4 w-4" />
+              Add up to 3 photos (2 MB each)
+              <input type="file" accept="image/*" multiple className="sr-only" onChange={(event) => loadPhotos(event.target.files)} />
+            </label>
+            {photos.length > 0 && <p className="text-xs text-muted-foreground">{photos.length} photo(s) selected</p>}
+            <Button type="submit" className="w-full">Submit review</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

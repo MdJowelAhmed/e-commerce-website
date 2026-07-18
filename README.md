@@ -190,6 +190,24 @@ Framer Motion drives every interaction in a consistent, performant way:
 ### Auth
 - Login & register with email/password, password strength meter, T&C checkbox
 
+### Commerce growth demos
+- Product comparison (up to four items), quick view, recently viewed history, size guide and fit finder
+- Back-in-stock subscriptions, writable reviews with local photo previews, guest-cart account sync
+- Loyalty points, referrals, flash-sale countdown, abandoned-cart recovery scheduling
+- Returns/refunds request flow, dark/light theme toggle, and hero CTA A/B assignment/event hooks
+- Typo-tolerant search with a local fallback and an optional Meilisearch adapter
+- Product JSON-LD, Open Graph product metadata, `sitemap.xml`, and `robots.txt`
+
+These additions follow the template's mock architecture: browser state is persisted locally and demo
+requests do not send real email/SMS, upload media, or issue refunds. Connect a database, object storage,
+authentication, and notification provider before using those workflows in production.
+
+#### Optional Meilisearch
+
+Set `MEILISEARCH_HOST` and `MEILISEARCH_API_KEY` in `.env.local`. The `products` index should expose
+documents matching the shared `Product` type. If Meilisearch is unavailable, `/api/search` automatically
+uses the built-in typo-tolerant local search.
+
 ## Available NPM Scripts
 
 | Script              | Description                                                 |

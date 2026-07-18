@@ -1,6 +1,7 @@
 import { BrandMarquee } from "@/features/home/components/brand-marquee";
 import { CategoriesSection } from "@/features/home/components/categories-section";
 import { FeaturedProductsSection } from "@/features/home/components/featured-products-section";
+import { FlashSaleCountdown } from "@/features/home/components/flash-sale-countdown";
 import { HeroSection } from "@/features/home/components/hero-section";
 import { PromoSection } from "@/features/home/components/promo-section";
 import { TestimonialsSection } from "@/features/home/components/testimonials-section";
@@ -23,6 +24,7 @@ export default function HomePage() {
     <>
       <HeroSection />
       <TrustBar />
+      <FlashSaleCountdown />
       <CategoriesSection categories={CATEGORIES} />
       <FeaturedProductsSection
         products={FEATURED_PRODUCTS.slice(0, 8)}

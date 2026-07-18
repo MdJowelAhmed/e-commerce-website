@@ -9,6 +9,10 @@ import {
   loadCartFromStorage,
 } from "./slices/cart-slice";
 import {
+  hydrateCommerce,
+  loadCommerceFromStorage,
+} from "./slices/commerce-slice";
+import {
   hydrateWishlist,
   loadWishlistFromStorage,
 } from "./slices/wishlist-slice";
@@ -29,6 +33,9 @@ export function ReduxProvider({ children }: { children: React.ReactNode }) {
 
     const wishlist = loadWishlistFromStorage();
     if (wishlist) store.dispatch(hydrateWishlist(wishlist));
+
+    const commerce = loadCommerceFromStorage();
+    if (commerce) store.dispatch(hydrateCommerce(commerce));
 
     return setupListeners(store.dispatch);
   }, []);

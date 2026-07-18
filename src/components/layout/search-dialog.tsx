@@ -1,38 +1,49 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Search, X } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { PRODUCTS } from "@/lib/mock-data/products";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { setSearchOpen } from "@/lib/store/slices/ui-slice";
 import { formatCurrency } from "@/lib/utils";
+import type { Product } from "@/types";
 
 export function SearchDialog() {
   const dispatch = useAppDispatch();
   const open = useAppSelector((s) => s.ui.searchOpen);
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!open) setQuery("");
   }, [open]);
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return PRODUCTS.slice(0, 4);
-    return PRODUCTS.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.brand.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.includes(q)),
-    ).slice(0, 6);
-  }, [query]);
+  useEffect(() => {
+    if (!open) return;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}`, {
+          signal: controller.signal,
+        });
+        if (response.ok) setResults((await response.json()) as Product[]);
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    }, query ? 180 : 0);
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [open, query]);
 
   return (
     <Dialog open={open} onOpenChange={(v) => dispatch(setSearchOpen(v))}>
@@ -47,6 +58,7 @@ export function SearchDialog() {
             placeholder="Search the collection…"
             className="h-auto border-0 px-0 py-0 text-base shadow-none focus-visible:ring-0"
           />
+          {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           {query && (
             <button
               type="button"
@@ -68,7 +80,7 @@ export function SearchDialog() {
                 exit={{ opacity: 0 }}
                 className="px-5 py-10 text-center text-sm text-muted-foreground"
               >
-                No matches for <span className="font-medium text-foreground">"{query}"</span>
+                No typo-tolerant matches for <span className="font-medium text-foreground">"{query}"</span>
               </motion.div>
             ) : (
               <motion.ul

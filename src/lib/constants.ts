@@ -34,15 +34,16 @@ export const FOOTER_LINKS = {
   ],
   Support: [
     { href: "/orders", label: "Track Order" },
+    { href: "/returns", label: "Returns & Refunds" },
     { href: "/wishlist", label: "Wishlist" },
-    { href: "/cart", label: "Shopping Bag" },
-    { href: "/about", label: "Help & About" },
+    { href: "/compare", label: "Compare Products" },
   ],
   Company: [
     { href: "/about", label: "About Us" },
     { href: "/products", label: "Collections" },
     { href: "/login", label: "Account" },
     { href: "/register", label: "Join Luxe" },
+    { href: "/rewards", label: "Rewards" },
   ],
   Legal: [
     { href: "/about", label: "Privacy overview" },

@@ -4,11 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Check,
+  Bell,
   Heart,
   Minus,
   Package,
   Plus,
   RefreshCw,
+  Scale,
   ShieldCheck,
   ShoppingBag,
   Truck,
@@ -21,12 +23,18 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addItem } from "@/lib/store/slices/cart-slice";
+import {
+  addRecentlyViewed,
+  addStockAlert,
+  toggleCompare,
+} from "@/lib/store/slices/commerce-slice";
 import { setCartOpen } from "@/lib/store/slices/ui-slice";
 import { toggleWishlist } from "@/lib/store/slices/wishlist-slice";
 import { calculateDiscount, cn, formatCurrency } from "@/lib/utils";
 import type { Product } from "@/types";
 
 import { ProductGallery } from "./product-gallery";
+import { SizeGuideDialog } from "./size-guide-dialog";
 
 interface ProductDetailsProps {
   product: Product;
@@ -43,6 +51,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     product.sizes.find((s) => s.available)?.id ?? product.sizes[0]?.id ?? "",
   );
   const [quantity, setQuantity] = useState(1);
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [alertEmail, setAlertEmail] = useState("");
+  const inCompare = useAppSelector((s) => s.commerce.compareIds.includes(product.id));
+
+  useEffect(() => {
+    dispatch(addRecentlyViewed(product.id));
+  }, [dispatch, product.id]);
 
   const selectedColor = product.colors.find((c) => c.id === colorId) ?? product.colors[0];
   const selectedSize = product.sizes.find((s) => s.id === sizeId) ?? product.sizes[0];
@@ -105,6 +120,24 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       }),
     );
     toast.success(inWishlist ? "Removed from wishlist" : "Saved to wishlist");
+  };
+
+  const handleStockAlert = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!alertEmail.includes("@") || !variant) {
+      toast.error("Enter a valid email address");
+      return;
+    }
+    dispatch(
+      addStockAlert({
+        productId: product.id,
+        variantId: variant.id,
+        email: alertEmail,
+        createdAt: new Date().toISOString(),
+      }),
+    );
+    setAlertEmail("");
+    toast.success("We will notify you when this item is back");
   };
 
   return (
@@ -198,6 +231,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <p className="text-sm font-medium">Size</p>
               <button
                 type="button"
+                onClick={() => setSizeGuideOpen(true)}
                 className="text-xs text-muted-foreground underline-offset-2 hover:underline"
               >
                 Size guide
@@ -226,6 +260,25 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               })}
             </div>
           </div>
+
+          {!inStock && (
+            <form onSubmit={handleStockAlert} className="mt-5 rounded-xl border bg-secondary/40 p-4">
+              <p className="flex items-center gap-2 text-sm font-medium">
+                <Bell className="h-4 w-4" />
+                Back-in-stock alert
+              </p>
+              <div className="mt-3 flex gap-2">
+                <input
+                  type="email"
+                  value={alertEmail}
+                  onChange={(event) => setAlertEmail(event.target.value)}
+                  placeholder="you@email.com"
+                  className="h-10 min-w-0 flex-1 rounded-xl border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                />
+                <Button type="submit" variant="secondary">Notify me</Button>
+              </div>
+            </form>
+          )}
 
           <div className="mt-6">
             <p className="text-sm font-medium">Quantity</p>
@@ -287,6 +340,20 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 {inWishlist ? "Saved" : "Save"}
               </Button>
             </motion.div>
+            <motion.div whileTap={{ scale: 0.98 }}>
+              <Button
+                size="xl"
+                variant="outline"
+                onClick={() => {
+                  dispatch(toggleCompare(product.id));
+                  toast.success(inCompare ? "Removed from compare" : "Added to compare");
+                }}
+                className="w-full sm:w-auto"
+              >
+                <Scale className="h-4 w-4" />
+                {inCompare ? "Comparing" : "Compare"}
+              </Button>
+            </motion.div>
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -319,6 +386,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
         </motion.div>
       </div>
+      <SizeGuideDialog open={sizeGuideOpen} onOpenChange={setSizeGuideOpen} />
     </div>
   );
 }
