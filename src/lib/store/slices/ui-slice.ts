@@ -4,14 +4,12 @@ export interface UIState {
   cartOpen: boolean;
   mobileMenuOpen: boolean;
   searchOpen: boolean;
-  filtersOpen: boolean;
 }
 
 const initialState: UIState = {
   cartOpen: false,
   mobileMenuOpen: false,
   searchOpen: false,
-  filtersOpen: false,
 };
 
 const uiSlice = createSlice({
@@ -27,24 +25,9 @@ const uiSlice = createSlice({
     setSearchOpen(state, action: PayloadAction<boolean>) {
       state.searchOpen = action.payload;
     },
-    setFiltersOpen(state, action: PayloadAction<boolean>) {
-      state.filtersOpen = action.payload;
-    },
-    closeAllOverlays(state) {
-      state.cartOpen = false;
-      state.mobileMenuOpen = false;
-      state.searchOpen = false;
-      state.filtersOpen = false;
-    },
   },
 });
 
-export const {
-  setCartOpen,
-  setMobileMenuOpen,
-  setSearchOpen,
-  setFiltersOpen,
-  closeAllOverlays,
-} = uiSlice.actions;
+export const { setCartOpen, setMobileMenuOpen, setSearchOpen } = uiSlice.actions;
 
 export default uiSlice.reducer;

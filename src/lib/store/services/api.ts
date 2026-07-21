@@ -110,11 +110,6 @@ function serializeParams(params: ProductsQuery): Record<string, string> {
 
 export const {
   useListProductsQuery,
-  useGetProductBySlugQuery,
-  useGetRelatedProductsQuery,
-  useListCategoriesQuery,
-  useGetReviewsQuery,
-  useListTestimonialsQuery,
   useListOrdersQuery,
   useCreateOrderMutation,
   useSubscribeNewsletterMutation,
