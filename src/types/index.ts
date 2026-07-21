@@ -1,8 +1,3 @@
-export interface Money {
-  amount: number;
-  currency: string;
-}
-
 export interface ProductImage {
   id: string;
   url: string;
@@ -154,17 +149,6 @@ export interface Order {
   updatedAt: string;
 }
 
-export interface Customer {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl?: string;
-  totalOrders: number;
-  totalSpent: number;
-  status: "active" | "inactive";
-  joinedAt: string;
-}
-
 export interface Testimonial {
   id: string;
   author: string;
@@ -172,12 +156,6 @@ export interface Testimonial {
   avatarUrl: string;
   quote: string;
   rating: number;
-}
-
-export interface ApiError {
-  status: number;
-  message: string;
-  details?: Record<string, string[]>;
 }
 
 export interface Paginated<T> {
@@ -192,14 +170,5 @@ export interface StockAlert {
   productId: string;
   variantId: string;
   email: string;
-  createdAt: string;
-}
-
-export interface ReturnRequest {
-  id: string;
-  orderId: string;
-  reason: string;
-  details?: string;
-  status: "submitted" | "approved" | "received" | "refunded";
   createdAt: string;
 }

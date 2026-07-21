@@ -1,59 +1,6 @@
-import type { Customer, Order } from "@/types";
+import type { Order } from "@/types";
 
 import { PRODUCT_IMAGES } from "./media";
-
-export const CUSTOMERS: Customer[] = [
-  {
-    id: "c-001",
-    name: "Amelia Rivers",
-    email: "amelia@example.com",
-    avatarUrl: "https://api.dicebear.com/9.x/avataaars/png?seed=Amelia",
-    totalOrders: 12,
-    totalSpent: 4280,
-    status: "active",
-    joinedAt: "2024-04-12T00:00:00.000Z",
-  },
-  {
-    id: "c-002",
-    name: "James Kessler",
-    email: "james@example.com",
-    avatarUrl: "https://api.dicebear.com/9.x/avataaars/png?seed=James",
-    totalOrders: 6,
-    totalSpent: 1890,
-    status: "active",
-    joinedAt: "2025-01-22T00:00:00.000Z",
-  },
-  {
-    id: "c-003",
-    name: "Sofia Chen",
-    email: "sofia@example.com",
-    avatarUrl: "https://api.dicebear.com/9.x/avataaars/png?seed=Sofia",
-    totalOrders: 18,
-    totalSpent: 7240,
-    status: "active",
-    joinedAt: "2023-11-05T00:00:00.000Z",
-  },
-  {
-    id: "c-004",
-    name: "Marcus Wright",
-    email: "marcus@example.com",
-    avatarUrl: "https://api.dicebear.com/9.x/avataaars/png?seed=Marcus",
-    totalOrders: 3,
-    totalSpent: 612,
-    status: "inactive",
-    joinedAt: "2025-09-18T00:00:00.000Z",
-  },
-  {
-    id: "c-005",
-    name: "Priya Patel",
-    email: "priya@example.com",
-    avatarUrl: "https://api.dicebear.com/9.x/avataaars/png?seed=Priya",
-    totalOrders: 9,
-    totalSpent: 3120,
-    status: "active",
-    joinedAt: "2024-08-30T00:00:00.000Z",
-  },
-];
 
 export const ORDERS: Order[] = [
   {

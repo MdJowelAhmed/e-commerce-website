@@ -55,7 +55,6 @@ export function FlashSaleCountdown() {
     </section>
   );
 }
-
 function Time({ value, label }: { value: number; label: string }) {
   return (
     <span className="min-w-14 rounded-xl bg-background/10 px-2 py-2 text-center">
@@ -64,3 +63,4 @@ function Time({ value, label }: { value: number; label: string }) {
     </span>
   );
 }
+
