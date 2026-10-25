@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+import type { CatalogFacets } from "@/lib/catalog";
 import type {
   Category,
   Order,
@@ -63,6 +64,10 @@ export const api = createApi({
       query: (slug) => `/products/${slug}/related`,
     }),
 
+    getCatalogFacets: builder.query<CatalogFacets, void>({
+      query: () => "/catalog/facets",
+    }),
+
     listCategories: builder.query<Category[], void>({
       query: () => "/categories",
       providesTags: [{ type: "Categories", id: "LIST" }],
@@ -110,6 +115,7 @@ function serializeParams(params: ProductsQuery): Record<string, string> {
 
 export const {
   useListProductsQuery,
+  useGetCatalogFacetsQuery,
   useListOrdersQuery,
   useCreateOrderMutation,
   useSubscribeNewsletterMutation,

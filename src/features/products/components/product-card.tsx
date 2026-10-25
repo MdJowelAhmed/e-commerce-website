@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Eye, Gift, Heart, Scale, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
@@ -19,7 +20,7 @@ import {
 } from "@/lib/store/slices/commerce-slice";
 import { setCartOpen } from "@/lib/store/slices/ui-slice";
 import { toggleWishlist } from "@/lib/store/slices/wishlist-slice";
-import { calculateDiscount, cn, formatCurrency } from "@/lib/utils";
+import { calculateDiscount, cn, formatCurrency, productNeedsVariantChoice } from "@/lib/utils";
 import type { Product } from "@/types";
 
 import { QuickViewDialog } from "./quick-view-dialog";
@@ -32,7 +33,10 @@ interface ProductCardProps {
 
 export function ProductCard({ product, priority, index = 0 }: ProductCardProps) {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [hovered, setHovered] = useState(false);
+  const [showAlt, setShowAlt] = useState(false);
+  const needsChoice = productNeedsVariantChoice(product);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const inWishlist = useAppSelector((s) =>
     s.wishlist.items.some((i) => i.productId === product.id),
@@ -47,6 +51,10 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
   const secondaryImage = product.images[1] ?? product.images[0];
 
   const handleQuickAdd = () => {
+    if (needsChoice) {
+      router.push(`/product/${product.slug}`);
+      return;
+    }
     const defaultColor = product.colors[0];
     const defaultSize = product.sizes.find((s) => s.available) ?? product.sizes[0];
     const variant =
@@ -96,13 +104,15 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
 
   return (
     <motion.article
-      layout
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.45, delay: Math.min(index * 0.04, 0.4), ease: [0.22, 1, 0.36, 1] }}
       className="group relative"
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={() => {
+        setHovered(true);
+        setShowAlt(true);
+      }}
       onMouseLeave={() => setHovered(false)}
     >
       <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-secondary">
@@ -125,7 +135,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
             />
           </motion.div>
 
-          {product.images.length > 1 && (
+          {showAlt && product.images.length > 1 && (
             <Image
               src={secondaryImage.url}
               alt={secondaryImage.alt}
@@ -228,7 +238,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
                   <ActionTooltip label="Add to shopping bag" side="top">
                     <Button type="button" className="w-full shadow-lg" onClick={handleQuickAdd}>
                       <ShoppingBag className="h-4 w-4" />
-                      Add
+                      {needsChoice ? "Choose" : "Add"}
                     </Button>
                   </ActionTooltip>
                 </div>
@@ -236,32 +246,24 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
             )}
           </AnimatePresence>
 
-          <div className="grid grid-cols-2 gap-2 md:hidden">
-            <ActionTooltip label="Quick view product details" side="top">
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                className="w-full shadow-lg"
-                onClick={() => setQuickViewOpen(true)}
-              >
-                <Eye className="h-4 w-4" />
-                View
-              </Button>
-            </ActionTooltip>
-            <ActionTooltip label="Add to shopping bag" side="top">
-              <Button
-                type="button"
-                size="sm"
-                className="w-full shadow-lg"
-                onClick={handleQuickAdd}
-              >
-                <ShoppingBag className="h-4 w-4" />
-                Add
-              </Button>
-            </ActionTooltip>
-          </div>
         </div>
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 md:hidden">
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          className="w-full"
+          onClick={() => setQuickViewOpen(true)}
+        >
+          <Eye className="h-4 w-4" />
+          View
+        </Button>
+        <Button type="button" size="sm" className="w-full" onClick={handleQuickAdd}>
+          <ShoppingBag className="h-4 w-4" />
+          {needsChoice ? "Choose" : "Add"}
+        </Button>
       </div>
 
       <div className="mt-4 space-y-1.5">
@@ -286,13 +288,21 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
               </span>
             )}
           </div>
-          <div className="flex -space-x-1">
+          <div
+            className="flex -space-x-1"
+            role="list"
+            aria-label={`Colors: ${product.colors
+              .slice(0, 4)
+              .map((color) => color.name)
+              .join(", ")}`}
+          >
             {product.colors.slice(0, 4).map((c) => (
               <span
                 key={c.id}
+                role="listitem"
+                aria-label={c.name}
                 className="h-3.5 w-3.5 rounded-full border border-background ring-1 ring-border"
                 style={{ backgroundColor: c.hex }}
-                title={c.name}
               />
             ))}
           </div>

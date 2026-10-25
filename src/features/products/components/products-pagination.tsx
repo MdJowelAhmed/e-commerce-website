@@ -42,6 +42,7 @@ export function ProductsPagination({ page, totalPages }: ProductsPaginationProps
             key={p}
             type="button"
             onClick={() => goto(p)}
+            aria-current={p === page ? "page" : undefined}
             className={cn(
               "h-10 min-w-10 rounded-full border px-3 text-sm font-medium transition-colors",
               p === page

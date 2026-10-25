@@ -55,7 +55,14 @@ export function SearchDialog() {
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && results[0]) {
+                router.push(`/product/${results[0].slug}`);
+                dispatch(setSearchOpen(false));
+              }
+            }}
             placeholder="Search the collection…"
+            aria-label="Search products"
             className="h-auto border-0 px-0 py-0 text-base shadow-none focus-visible:ring-0"
           />
           {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -80,7 +87,11 @@ export function SearchDialog() {
                 exit={{ opacity: 0 }}
                 className="px-5 py-10 text-center text-sm text-muted-foreground"
               >
-                No typo-tolerant matches for <span className="font-medium text-foreground">"{query}"</span>
+                {loading
+                  ? "Searching…"
+                  : query.trim()
+                    ? <>No matches for <span className="font-medium text-foreground">&ldquo;{query}&rdquo;</span></>
+                    : "Search by name, brand, or tag."}
               </motion.div>
             ) : (
               <motion.ul
@@ -90,6 +101,11 @@ export function SearchDialog() {
                 exit={{ opacity: 0 }}
                 className="space-y-1"
               >
+                {!query.trim() && (
+                  <li className="px-3 pb-1 pt-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                    Popular pieces
+                  </li>
+                )}
                 {results.map((p, i) => (
                   <motion.li
                     key={p.id}

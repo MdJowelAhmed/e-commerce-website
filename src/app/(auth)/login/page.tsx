@@ -63,23 +63,35 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground">Email</Label>
+          <Label htmlFor="login-email" className="text-xs uppercase tracking-wider text-muted-foreground">
+            Email
+          </Label>
           <div className="relative">
             <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
+              id="login-email"
               type="email"
+              autoComplete="email"
               placeholder="you@email.com"
               className="pl-9"
+              aria-invalid={errors.email ? true : undefined}
+              aria-describedby={errors.email ? "login-email-error" : undefined}
               {...register("email")}
             />
           </div>
-          {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+          {errors.email && (
+            <p id="login-email-error" className="text-xs text-destructive">
+              {errors.email.message}
+            </p>
+          )}
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Password</Label>
+            <Label htmlFor="login-password" className="text-xs uppercase tracking-wider text-muted-foreground">
+              Password
+            </Label>
             <Link
-              href="#"
+              href="/forgot-password"
               className="text-xs font-medium text-foreground/70 underline-offset-2 hover:underline"
             >
               Forgot password?
@@ -87,8 +99,12 @@ export default function LoginPage() {
           </div>
           <div className="relative">
             <Input
+              id="login-password"
               type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
               placeholder="••••••••"
+              aria-invalid={errors.password ? true : undefined}
+              aria-describedby={errors.password ? "login-password-error" : undefined}
               {...register("password")}
             />
             <button
@@ -101,7 +117,9 @@ export default function LoginPage() {
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs text-destructive">{errors.password.message}</p>
+            <p id="login-password-error" className="text-xs text-destructive">
+              {errors.password.message}
+            </p>
           )}
         </div>
         <label
@@ -146,7 +164,13 @@ export default function LoginPage() {
 
 function SocialButton({ label }: { label: string }) {
   return (
-    <Button type="button" variant="outline" size="lg" className="w-full">
+    <Button
+      type="button"
+      variant="outline"
+      size="lg"
+      className="w-full"
+      onClick={() => toast.message(`${label} isn't connected in this demo yet.`)}
+    >
       {label}
     </Button>
   );

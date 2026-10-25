@@ -17,6 +17,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { FOOTER_LINKS, SITE_CONFIG } from "@/lib/constants";
 import { useSubscribeNewsletterMutation } from "@/lib/store/services/api";
 
@@ -161,10 +162,15 @@ function NewsletterBlock() {
           className="flex gap-2"
         >
           <div className="relative flex-1">
+            <Label htmlFor="newsletter-email" className="sr-only">
+              Email address
+            </Label>
             <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
+              id="newsletter-email"
               type="email"
               required
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"

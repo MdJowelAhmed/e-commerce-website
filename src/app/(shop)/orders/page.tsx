@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useListOrdersQuery } from "@/lib/store/services/api";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
@@ -34,7 +35,7 @@ const STATUS_INDEX: Record<OrderStatus, number> = {
 };
 
 export default function OrdersPage() {
-  const { data: orders, isLoading } = useListOrdersQuery();
+  const { data: orders, isLoading, isError, refetch } = useListOrdersQuery();
 
   return (
     <div className="container-wide py-10 lg:py-14">
@@ -48,6 +49,25 @@ export default function OrdersPage() {
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-40 w-full rounded-2xl" />
           ))}
+        </div>
+      ) : isError ? (
+        <div className="mt-16 flex flex-col items-center gap-3 text-center">
+          <h2 className="text-lg font-semibold">We couldn&apos;t load your orders</h2>
+          <p className="text-sm text-muted-foreground">Check your connection and try again.</p>
+          <Button variant="outline" onClick={() => refetch()}>
+            Try again
+          </Button>
+        </div>
+      ) : !orders?.length ? (
+        <div className="mt-16 flex flex-col items-center gap-3 text-center">
+          <Package className="h-8 w-8 text-muted-foreground" />
+          <h2 className="text-lg font-semibold">No orders yet</h2>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            When you place an order, it will show up here.
+          </p>
+          <Button asChild>
+            <Link href="/products">Shop the collection</Link>
+          </Button>
         </div>
       ) : (
         <div className="mt-8 space-y-4">

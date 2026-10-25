@@ -12,6 +12,7 @@ import {
   hydrateCommerce,
   loadCommerceFromStorage,
 } from "./slices/commerce-slice";
+import { setStoreReady } from "./slices/ui-slice";
 import {
   hydrateWishlist,
   loadWishlistFromStorage,
@@ -36,6 +37,8 @@ export function ReduxProvider({ children }: { children: React.ReactNode }) {
 
     const commerce = loadCommerceFromStorage();
     if (commerce) store.dispatch(hydrateCommerce(commerce));
+
+    store.dispatch(setStoreReady());
 
     return setupListeners(store.dispatch);
   }, []);

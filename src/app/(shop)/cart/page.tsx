@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CartSummary } from "@/features/cart/components/cart-summary";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { selectCartItems } from "@/lib/store/selectors";
@@ -15,6 +16,7 @@ import { formatCurrency } from "@/lib/utils";
 export default function CartPage() {
   const dispatch = useAppDispatch();
   const items = useAppSelector(selectCartItems);
+  const storeReady = useAppSelector((state) => state.ui.storeReady);
 
   return (
     <div className="container-wide py-10 lg:py-14">
@@ -38,7 +40,12 @@ export default function CartPage() {
         </Link>
       </motion.div>
 
-      {items.length === 0 ? (
+      {!storeReady ? (
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
+          <Skeleton className="h-64 rounded-2xl" />
+          <Skeleton className="h-72 rounded-2xl" />
+        </div>
+      ) : items.length === 0 ? (
         <EmptyCart />
       ) : (
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">

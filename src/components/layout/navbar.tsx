@@ -2,38 +2,51 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Heart, Menu, Scale, ShoppingBag } from "lucide-react";
+import { Heart, Menu, Scale, Search, ShoppingBag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
+import { isNavLinkActive } from "@/lib/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { selectCartCount, selectWishlistItems } from "@/lib/store/selectors";
-import { setCartOpen, setMobileMenuOpen } from "@/lib/store/slices/ui-slice";
+import { setCartOpen, setMobileMenuOpen, setSearchOpen } from "@/lib/store/slices/ui-slice";
 import { cn } from "@/lib/utils";
 
 import { ProfileMenu } from "./profile-menu";
 
 export function Navbar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
   const dispatch = useAppDispatch();
   const [scrolled, setScrolled] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
+  const storeReady = useAppSelector((state) => state.ui.storeReady);
   const cartCount = useAppSelector(selectCartCount);
   const wishlist = useAppSelector(selectWishlistItems);
   const compareCount = useAppSelector((state) => state.commerce.compareIds.length);
 
   useEffect(() => {
-    setHydrated(true);
     const handler = () => setScrolled(window.scrollY > 12);
     handler();
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const displayCart = hydrated ? cartCount : 0;
-  const displayWishlist = hydrated ? wishlist.length : 0;
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        dispatch(setSearchOpen(true));
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [dispatch]);
+
+  const displayCart = storeReady ? cartCount : 0;
+  const displayWishlist = storeReady ? wishlist.length : 0;
 
   return (
     <motion.header
@@ -74,14 +87,12 @@ export function Navbar() {
 
         <nav className="hidden items-center gap-1 lg:flex">
           {NAV_LINKS.map((link) => {
-            const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const isActive = isNavLinkActive(link.href, pathname, search);
             return (
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
                   "relative px-4 py-2 text-sm font-medium text-foreground/70 transition-colors hover:text-foreground",
                   isActive && "text-foreground",
@@ -103,6 +114,15 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Search"
+            aria-keyshortcuts="Control+K"
+            onClick={() => dispatch(setSearchOpen(true))}
+          >
+            <Search className="h-5 w-5" />
+          </Button>
           <Button variant="ghost" size="icon" asChild className="relative" aria-label="Wishlist">
             <Link href="/wishlist">
               <Heart className="h-5 w-5" />
@@ -143,10 +163,16 @@ export function Navbar() {
               )}
             </AnimatePresence>
           </Button>
-          <Button variant="ghost" size="icon" asChild className="relative" aria-label="Compare">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="relative hidden sm:inline-flex"
+            aria-label="Compare"
+          >
             <Link href="/compare">
               <Scale className="h-5 w-5" />
-              {hydrated && compareCount > 0 && (
+              {storeReady && compareCount > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-foreground">
                   {compareCount}
                 </span>

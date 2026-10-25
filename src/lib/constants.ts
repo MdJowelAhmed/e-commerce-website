@@ -51,8 +51,8 @@ export const FOOTER_LINKS = {
     { href: "/membership", label: "Membership" },
   ],
   Legal: [
-    { href: "/about", label: "Privacy overview" },
-    { href: "/about", label: "Terms overview" },
+    { href: "/privacy", label: "Privacy" },
+    { href: "/terms", label: "Terms" },
   ],
 } as const;
 

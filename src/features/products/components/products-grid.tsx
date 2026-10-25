@@ -19,7 +19,7 @@ import { useProductsFilters } from "../hooks/use-products-filters";
 
 export function ProductsGrid() {
   const { filters, clearFilters } = useProductsFilters();
-  const { data, isFetching } = useListProductsQuery(filters);
+  const { data, isFetching, isError, refetch } = useListProductsQuery(filters);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   return (
@@ -51,7 +51,12 @@ export function ProductsGrid() {
           </Sheet>
 
           <div className="mt-6">
-            {isFetching && !data ? (
+            {isError ? (
+              <QueryError
+                title="We couldn't load products"
+                onRetry={() => refetch()}
+              />
+            ) : isFetching && !data ? (
               <ProductGridSkeleton count={8} />
             ) : data && data.items.length > 0 ? (
               <motion.div
@@ -78,6 +83,18 @@ export function ProductsGrid() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function QueryError({ title, onRetry }: { title: string; onRetry: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <p className="text-sm text-muted-foreground">Check your connection and try again.</p>
+      <Button variant="outline" onClick={onRetry} className="mt-2">
+        Try again
+      </Button>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Accordion,
@@ -11,41 +11,30 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { CATEGORIES } from "@/lib/mock-data/categories";
-import { PRODUCTS } from "@/lib/mock-data/products";
+import { useGetCatalogFacetsQuery } from "@/lib/store/services/api";
 import { formatCurrency } from "@/lib/utils";
 
 import { useProductsFilters } from "../hooks/use-products-filters";
 
 export function ProductFilters({ onClose }: { onClose?: () => void }) {
   const { filters, updateFilters, clearFilters, activeFilterCount } = useProductsFilters();
+  const { data: facets, isError, refetch, isLoading } = useGetCatalogFacetsQuery();
 
-  const allColors = useMemo(() => {
-    const map = new Map<string, { id: string; name: string; hex: string }>();
-    PRODUCTS.forEach((p) => p.colors.forEach((c) => map.set(c.id, c)));
-    return Array.from(map.values());
-  }, []);
-
-  const allSizes = useMemo(() => {
-    const map = new Map<string, { id: string; label: string }>();
-    PRODUCTS.forEach((p) =>
-      p.sizes.forEach((s) => map.set(s.id, { id: s.id, label: s.label })),
-    );
-    return Array.from(map.values());
-  }, []);
-
-  const allBrands = useMemo(() => {
-    const set = new Set<string>();
-    PRODUCTS.forEach((p) => set.add(p.brand));
-    return Array.from(set);
-  }, []);
-
-  const priceMax = useMemo(() => Math.max(...PRODUCTS.map((p) => p.price)) + 10, []);
+  const allColors = facets?.colors ?? [];
+  const allSizes = facets?.sizes ?? [];
+  const allBrands = facets?.brands ?? [];
+  const categories = facets?.categories ?? [];
+  const priceMax = facets?.priceMax ?? 0;
 
   const [price, setPrice] = useState<[number, number]>([
     filters.minPrice ?? 0,
-    filters.maxPrice ?? priceMax,
+    filters.maxPrice ?? 0,
   ]);
+
+  useEffect(() => {
+    if (!facets) return;
+    setPrice([filters.minPrice ?? 0, filters.maxPrice ?? facets.priceMax]);
+  }, [facets, filters.minPrice, filters.maxPrice]);
 
   const toggleArray = (key: "colors" | "sizes" | "brands", value: string) => {
     const current = filters[key] ?? [];
@@ -76,13 +65,23 @@ export function ProductFilters({ onClose }: { onClose?: () => void }) {
         </button>
       </div>
 
+      {isError && (
+        <div className="py-4 text-sm text-muted-foreground">
+          <p>Filters could not be loaded.</p>
+          <button type="button" onClick={() => refetch()} className="mt-2 underline">
+            Try again
+          </button>
+        </div>
+      )}
+
       <Accordion type="multiple" defaultValue={["category", "price", "color"]}>
         <AccordionItem value="category">
           <AccordionTrigger>Category</AccordionTrigger>
           <AccordionContent className="space-y-2">
-            {CATEGORIES.map((cat) => (
+            {isLoading && <p className="text-xs text-muted-foreground">Loading filters…</p>}
+            {categories.map((cat) => (
               <label
-                key={cat.id}
+                key={cat.slug}
                 className="flex cursor-pointer items-center gap-2 text-sm"
               >
                 <Checkbox
@@ -92,7 +91,7 @@ export function ProductFilters({ onClose }: { onClose?: () => void }) {
                   }
                 />
                 <span className="flex-1">{cat.name}</span>
-                <span className="text-xs text-muted-foreground">{cat.productCount}</span>
+                <span className="text-xs text-muted-foreground">{cat.count}</span>
               </label>
             ))}
           </AccordionContent>
@@ -101,11 +100,12 @@ export function ProductFilters({ onClose }: { onClose?: () => void }) {
         <AccordionItem value="price">
           <AccordionTrigger>Price</AccordionTrigger>
           <AccordionContent className="overflow-visible px-1 pt-3">
-            <Slider
-              value={price}
+              <Slider
+              value={priceMax > 0 ? price : [0, 0]}
               min={0}
-              max={priceMax}
+              max={priceMax || 1}
               step={5}
+              disabled={!facets}
               onValueChange={(v) => setPrice([v[0], v[1]])}
               onValueCommit={(v) =>
                 updateFilters({
@@ -131,7 +131,8 @@ export function ProductFilters({ onClose }: { onClose?: () => void }) {
                   <button
                     key={c.id}
                     type="button"
-                    title={c.name}
+                    aria-label={c.name}
+                    aria-pressed={Boolean(active)}
                     onClick={() => toggleArray("colors", c.id)}
                     className={`relative h-9 w-9 rounded-full border transition-all ${
                       active
@@ -156,6 +157,7 @@ export function ProductFilters({ onClose }: { onClose?: () => void }) {
                   <button
                     key={s.id}
                     type="button"
+                    aria-pressed={Boolean(active)}
                     onClick={() => toggleArray("sizes", s.id)}
                     className={`min-w-[3rem] rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                       active

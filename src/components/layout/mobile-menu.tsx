@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Award,
@@ -11,13 +11,15 @@ import {
   LogIn,
   Package,
   RotateCcw,
+  Search,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
+import { isNavLinkActive } from "@/lib/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { setMobileMenuOpen } from "@/lib/store/slices/ui-slice";
+import { setMobileMenuOpen, setSearchOpen } from "@/lib/store/slices/ui-slice";
 
 const ACCOUNT_LINKS = [
   { href: "/custom-offer", label: "Custom Offer", icon: Gift },
@@ -41,6 +43,7 @@ export function MobileMenu() {
   const dispatch = useAppDispatch();
   const open = useAppSelector((s) => s.ui.mobileMenuOpen);
   const pathname = usePathname();
+  const search = useSearchParams().toString();
 
   return (
     <Sheet open={open} onOpenChange={(v) => dispatch(setMobileMenuOpen(v))}>
@@ -56,16 +59,30 @@ export function MobileMenu() {
           initial="hidden"
           animate="show"
         >
+          <motion.div variants={itemVariants}>
+            <button
+              type="button"
+              onClick={() => {
+                dispatch(setMobileMenuOpen(false));
+                dispatch(setSearchOpen(true));
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors hover:bg-secondary"
+            >
+              <span className="inline-flex items-center gap-3 text-foreground/80">
+                <Search className="h-4 w-4 text-muted-foreground" />
+                Search
+              </span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </button>
+          </motion.div>
           {NAV_LINKS.map((link) => {
-            const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
+            const isActive = isNavLinkActive(link.href, pathname, search);
             return (
               <motion.div key={link.href} variants={itemVariants}>
                 <Link
                   href={link.href}
                   onClick={() => dispatch(setMobileMenuOpen(false))}
+                  aria-current={isActive ? "page" : undefined}
                   className="group flex items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors hover:bg-secondary"
                 >
                   <span className={isActive ? "text-foreground" : "text-foreground/80"}>
@@ -84,12 +101,13 @@ export function MobileMenu() {
           </motion.p>
           {ACCOUNT_LINKS.map((link) => {
             const Icon = link.icon;
-            const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const isActive = isNavLinkActive(link.href, pathname, search);
             return (
               <motion.div key={link.href} variants={itemVariants}>
                 <Link
                   href={link.href}
                   onClick={() => dispatch(setMobileMenuOpen(false))}
+                  aria-current={isActive ? "page" : undefined}
                   className="group flex items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors hover:bg-secondary"
                 >
                   <span className="inline-flex items-center gap-3">

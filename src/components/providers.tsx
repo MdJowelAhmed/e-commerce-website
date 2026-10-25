@@ -1,5 +1,6 @@
 "use client";
 
+import { MotionConfig } from "framer-motion";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 
@@ -11,7 +12,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ReduxProvider>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
         <TooltipProvider delayDuration={150}>
-          {children}
+          <MotionConfig reducedMotion="user">{children}</MotionConfig>
           <Toaster
             position="top-right"
             richColors

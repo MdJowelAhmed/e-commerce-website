@@ -6,6 +6,12 @@ import { SITE_IMAGES } from "@/lib/mock-data/media";
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative grid min-h-screen lg:grid-cols-2">
+      <a
+        href="#auth-main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-sm focus:text-background"
+      >
+        Skip to content
+      </a>
       <div className="relative hidden overflow-hidden lg:block">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -50,7 +56,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             Back to home
           </Link>
         </header>
-        <div className="flex flex-1 items-center justify-center px-6 pb-12">
+        <div id="auth-main" className="flex flex-1 items-center justify-center px-6 pb-12">
           <div className="w-full max-w-md">{children}</div>
         </div>
       </div>

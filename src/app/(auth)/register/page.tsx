@@ -63,27 +63,62 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground">Full name</Label>
+          <Label htmlFor="register-name" className="text-xs uppercase tracking-wider text-muted-foreground">
+            Full name
+          </Label>
           <div className="relative">
             <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Your name" className="pl-9" {...register("name")} />
+            <Input
+              id="register-name"
+              autoComplete="name"
+              placeholder="Your name"
+              className="pl-9"
+              aria-invalid={errors.name ? true : undefined}
+              aria-describedby={errors.name ? "register-name-error" : undefined}
+              {...register("name")}
+            />
           </div>
-          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+          {errors.name && (
+            <p id="register-name-error" className="text-xs text-destructive">
+              {errors.name.message}
+            </p>
+          )}
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground">Email</Label>
+          <Label htmlFor="register-email" className="text-xs uppercase tracking-wider text-muted-foreground">
+            Email
+          </Label>
           <div className="relative">
             <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input type="email" placeholder="you@email.com" className="pl-9" {...register("email")} />
+            <Input
+              id="register-email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@email.com"
+              className="pl-9"
+              aria-invalid={errors.email ? true : undefined}
+              aria-describedby={errors.email ? "register-email-error" : undefined}
+              {...register("email")}
+            />
           </div>
-          {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+          {errors.email && (
+            <p id="register-email-error" className="text-xs text-destructive">
+              {errors.email.message}
+            </p>
+          )}
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground">Password</Label>
+          <Label htmlFor="register-password" className="text-xs uppercase tracking-wider text-muted-foreground">
+            Password
+          </Label>
           <div className="relative">
             <Input
+              id="register-password"
               type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
               placeholder="••••••••"
+              aria-invalid={errors.password ? true : undefined}
+              aria-describedby={errors.password ? "register-password-error" : undefined}
               {...register("password")}
             />
             <button
@@ -99,26 +134,39 @@ export default function RegisterPage() {
             <Progress value={strength.value} className="h-1.5 flex-1" />
             <span className="text-[10px] text-muted-foreground">{strength.label}</span>
           </div>
-          {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+          {errors.password && (
+            <p id="register-password-error" className="text-xs text-destructive">
+              {errors.password.message}
+            </p>
+          )}
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+          <Label htmlFor="register-confirm" className="text-xs uppercase tracking-wider text-muted-foreground">
             Confirm password
           </Label>
           <Input
+            id="register-confirm"
             type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
             placeholder="••••••••"
+            aria-invalid={errors.confirmPassword ? true : undefined}
+            aria-describedby={errors.confirmPassword ? "register-confirm-error" : undefined}
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && (
-            <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
+            <p id="register-confirm-error" className="text-xs text-destructive">
+              {errors.confirmPassword.message}
+            </p>
           )}
         </div>
-        <label className="flex items-start gap-2 text-sm text-muted-foreground">
+        <label htmlFor="register-terms" className="flex items-start gap-2 text-sm text-muted-foreground">
           <Checkbox
+            id="register-terms"
             checked={!!watch("terms")}
             onCheckedChange={(v) => setValue("terms", Boolean(v), { shouldValidate: true })}
             className="mt-0.5"
+            aria-invalid={errors.terms ? true : undefined}
+            aria-describedby={errors.terms ? "register-terms-error" : undefined}
           />
           <span>
             I agree to Luxe's{" "}
@@ -132,7 +180,11 @@ export default function RegisterPage() {
             .
           </span>
         </label>
-        {errors.terms && <p className="text-xs text-destructive">{errors.terms.message}</p>}
+        {errors.terms && (
+          <p id="register-terms-error" className="text-xs text-destructive">
+            {errors.terms.message}
+          </p>
+        )}
 
         <Button type="submit" size="lg" className="w-full" disabled={loading}>
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create account"}

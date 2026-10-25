@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { addItem } from "@/lib/store/slices/cart-slice";
 import { setCartOpen } from "@/lib/store/slices/ui-slice";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, productNeedsVariantChoice } from "@/lib/utils";
 import type { Product } from "@/types";
 
 export function QuickViewDialog({
@@ -23,6 +23,7 @@ export function QuickViewDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const dispatch = useAppDispatch();
+  const needsChoice = productNeedsVariantChoice(product);
   const color = product.colors[0];
   const size = product.sizes.find((item) => item.available) ?? product.sizes[0];
   const variant =
@@ -81,14 +82,23 @@ export function QuickViewDialog({
               Default selection: {color?.name} / {size?.label}
             </p>
             <div className="mt-6 grid gap-3">
-              <Button onClick={addToBag} disabled={!variant || variant.stock < 1}>
-                <ShoppingBag className="h-4 w-4" />
-                {variant?.stock ? "Quick add to bag" : "Out of stock"}
-              </Button>
+              {needsChoice ? (
+                <Button asChild>
+                  <Link href={`/product/${product.slug}`} onClick={() => onOpenChange(false)}>
+                    <ShoppingBag className="h-4 w-4" />
+                    Choose color and size
+                  </Link>
+                </Button>
+              ) : (
+                <Button onClick={addToBag} disabled={!variant || variant.stock < 1}>
+                  <ShoppingBag className="h-4 w-4" />
+                  {variant?.stock ? "Add to bag" : "Out of stock"}
+                </Button>
+              )}
               <Button variant="outline" asChild>
                 <Link href={`/product/${product.slug}`} onClick={() => onOpenChange(false)}>
                   <Eye className="h-4 w-4" />
-                  View all options
+                  View product
                 </Link>
               </Button>
             </div>

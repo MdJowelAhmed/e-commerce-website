@@ -2,35 +2,48 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart, ShoppingBag, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { useMounted } from "@/hooks/use-mounted";
-import { PRODUCTS } from "@/lib/mock-data/products";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { selectWishlistItems } from "@/lib/store/selectors";
 import { addItem } from "@/lib/store/slices/cart-slice";
 import { setCartOpen } from "@/lib/store/slices/ui-slice";
 import { removeFromWishlist } from "@/lib/store/slices/wishlist-slice";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, productNeedsVariantChoice } from "@/lib/utils";
+import type { Product } from "@/types";
 
 export default function WishlistPage() {
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const items = useAppSelector(selectWishlistItems);
-  const mounted = useMounted();
+  const storeReady = useAppSelector((state) => state.ui.storeReady);
 
-  if (!mounted) return null;
-
-  const moveToBag = (productId: string) => {
-    const product = PRODUCTS.find((p) => p.id === productId);
-    if (!product) return;
+  const moveToBag = async (productId: string, productSlug: string) => {
+    const response = await fetch(`/api/products/${productSlug}`);
+    if (!response.ok) {
+      router.push(`/product/${productSlug}`);
+      return;
+    }
+    const product = (await response.json()) as Product;
+    if (productNeedsVariantChoice(product)) {
+      router.push(`/product/${product.slug}`);
+      toast.message("Choose a color and size before adding this piece.");
+      return;
+    }
     const color = product.colors[0];
     const size = product.sizes.find((s) => s.available) ?? product.sizes[0];
     const variant =
-      product.variants.find((v) => v.colorId === color.id && v.sizeId === size.id) ??
+      product.variants.find((v) => v.colorId === color?.id && v.sizeId === size?.id) ??
       product.variants[0];
+    if (!color || !size || !variant) {
+      router.push(`/product/${product.slug}`);
+      return;
+    }
     dispatch(
       addItem({
         id: product.id,
@@ -53,6 +66,19 @@ export default function WishlistPage() {
     dispatch(setCartOpen(true));
     toast.success(`${product.name} added to bag`);
   };
+
+  if (!storeReady) {
+    return (
+      <div className="container-wide py-10 lg:py-14">
+        <Skeleton className="h-10 w-48" />
+        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Skeleton key={index} className="aspect-[4/5] rounded-2xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-wide py-10 lg:py-14">
@@ -120,7 +146,7 @@ export default function WishlistPage() {
                   </div>
                   <Button
                     type="button"
-                    onClick={() => moveToBag(item.productId)}
+                    onClick={() => moveToBag(item.productId, item.productSlug)}
                     className="mt-3 w-full"
                     variant="outline"
                   >

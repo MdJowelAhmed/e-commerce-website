@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { CURRENCY } from "@/lib/constants";
+import type { Product } from "@/types";
 
 /**
  * Combine class names with Tailwind-aware conflict resolution.
@@ -52,6 +53,14 @@ export function calculateDiscount(price: number, comparePrice?: number): number 
  */
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
+}
+
+/** Apparel with more than one color or size should not be added silently. */
+export function productNeedsVariantChoice(
+  product: Pick<Product, "colors" | "sizes">,
+): boolean {
+  const availableSizes = product.sizes.filter((size) => size.available);
+  return product.colors.length > 1 || availableSizes.length > 1;
 }
 
 /**
