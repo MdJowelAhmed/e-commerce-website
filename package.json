@@ -4,9 +4,9 @@
   "private": true,
   "description": "Premium storefront eCommerce template built with Next.js 15, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion, Redux Toolkit and RTK Query.",
   "scripts": {
-    "dev": "node api.js && next dev",
-    "build": "node api.js && next build",
-    "start": "node api.js && next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\""
