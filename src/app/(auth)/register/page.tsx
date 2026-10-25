@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,6 +38,11 @@ export default function RegisterPage() {
       terms: false,
     },
   });
+
+  useEffect(() => {
+    const email = new URLSearchParams(window.location.search).get("email");
+    if (email) setValue("email", email);
+  }, [setValue]);
 
   const password = watch("password") ?? "";
   const strength = passwordStrength(password);

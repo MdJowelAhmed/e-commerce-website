@@ -157,7 +157,9 @@ export default function CheckoutPage() {
       dispatch(clearCart());
       clearCheckoutDraft();
       toast.success("Order placed successfully");
-      router.push(`/order/success?n=${order.number}`);
+      router.push(
+        `/order/success?n=${encodeURIComponent(order.number)}&email=${encodeURIComponent(address.email)}`,
+      );
     } catch {
       toast.error("Could not place order. Please try again.");
     } finally {

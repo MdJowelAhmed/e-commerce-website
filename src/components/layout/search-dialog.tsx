@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { setSearchOpen } from "@/lib/store/slices/ui-slice";
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import type { Product } from "@/types";
 
 export function SearchDialog() {
@@ -20,10 +20,29 @@ export function SearchDialog() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
-    if (!open) setQuery("");
+    if (!open) {
+      setQuery("");
+      setResults([]);
+      setActiveIndex(0);
+    }
   }, [open]);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [query, results]);
+
+  useEffect(() => {
+    itemRefs.current[activeIndex]?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex]);
+
+  const openResult = (product: Product) => {
+    router.push(`/product/${product.slug}`);
+    dispatch(setSearchOpen(false));
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -56,11 +75,22 @@ export function SearchDialog() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(event) => {
-              if (event.key === "Enter" && results[0]) {
-                router.push(`/product/${results[0].slug}`);
-                dispatch(setSearchOpen(false));
+              if (!results.length) return;
+              if (event.key === "ArrowDown") {
+                event.preventDefault();
+                setActiveIndex((index) => Math.min(results.length - 1, index + 1));
+              } else if (event.key === "ArrowUp") {
+                event.preventDefault();
+                setActiveIndex((index) => Math.max(0, index - 1));
+              } else if (event.key === "Enter" && results[activeIndex]) {
+                event.preventDefault();
+                openResult(results[activeIndex]);
               }
             }}
+            role="combobox"
+            aria-expanded={results.length > 0}
+            aria-controls="search-results"
+            aria-activedescendant={results[activeIndex] ? `search-result-${results[activeIndex].id}` : undefined}
             placeholder="Search the collection…"
             aria-label="Search products"
             className="h-auto border-0 px-0 py-0 text-base shadow-none focus-visible:ring-0"
@@ -99,6 +129,8 @@ export function SearchDialog() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                id="search-results"
+                role="listbox"
                 className="space-y-1"
               >
                 {!query.trim() && (
@@ -114,12 +146,19 @@ export function SearchDialog() {
                     transition={{ delay: i * 0.03 }}
                   >
                     <button
+                      id={`search-result-${p.id}`}
                       type="button"
-                      onClick={() => {
-                        router.push(`/product/${p.slug}`);
-                        dispatch(setSearchOpen(false));
+                      role="option"
+                      aria-selected={i === activeIndex}
+                      ref={(node) => {
+                        itemRefs.current[i] = node;
                       }}
-                      className="flex w-full items-center gap-4 rounded-xl p-3 text-left transition-colors hover:bg-secondary"
+                      onMouseEnter={() => setActiveIndex(i)}
+                      onClick={() => openResult(p)}
+                      className={cn(
+                        "flex w-full items-center gap-4 rounded-xl p-3 text-left transition-colors",
+                        i === activeIndex ? "bg-secondary" : "hover:bg-secondary",
+                      )}
                     >
                       <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-secondary">
                         <Image

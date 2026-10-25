@@ -25,7 +25,12 @@ export default function HomePage() {
       <HeroSection />
       <TrustBar />
       <FlashSaleCountdown />
-      <CategoriesSection categories={CATEGORIES} />
+      <CategoriesSection
+        categories={CATEGORIES.map((category) => ({
+          ...category,
+          productCount: PRODUCTS.filter((product) => product.category === category.slug).length,
+        }))}
+      />
       <FeaturedProductsSection
         products={FEATURED_PRODUCTS.slice(0, 8)}
         eyebrow="Best sellers"

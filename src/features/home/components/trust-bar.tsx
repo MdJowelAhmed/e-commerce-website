@@ -3,8 +3,11 @@
 import { motion } from "framer-motion";
 import { Award, Headphones, RefreshCw, ShieldCheck, Truck } from "lucide-react";
 
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
+import { formatCurrency } from "@/lib/utils";
+
 const ITEMS = [
-  { icon: Truck, title: "Free shipping", body: "On orders over $75" },
+  { icon: Truck, title: "Free shipping", body: `On orders over ${formatCurrency(FREE_SHIPPING_THRESHOLD)}` },
   { icon: RefreshCw, title: "30-day returns", body: "Easy and hassle-free" },
   { icon: ShieldCheck, title: "Secure checkout", body: "256-bit SSL encryption" },
   { icon: Headphones, title: "Concierge support", body: "Real humans, real fast" },

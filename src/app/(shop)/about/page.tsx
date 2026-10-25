@@ -6,7 +6,9 @@ import { motion } from "framer-motion";
 import { ArrowRight, Award, Globe, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import { SITE_IMAGES } from "@/lib/mock-data/media";
+import { formatCurrency } from "@/lib/utils";
 
 const VALUES = [
   {
@@ -90,7 +92,7 @@ export default function AboutPage() {
         <div>
           <h2 className="font-display text-3xl tracking-tight">Browse the latest collection.</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            New arrivals every week. Free shipping on orders over $75.
+            New arrivals every week. Free shipping on orders over {formatCurrency(FREE_SHIPPING_THRESHOLD)}.
           </p>
         </div>
         <Button asChild size="lg">

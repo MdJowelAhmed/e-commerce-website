@@ -3,9 +3,12 @@
 import { motion } from "framer-motion";
 import { Sparkles, Truck } from "lucide-react";
 
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
+import { formatCurrency } from "@/lib/utils";
+
 const ITEMS = [
   { icon: Sparkles, text: "New arrivals — handcrafted in limited quantities" },
-  { icon: Truck, text: "Complimentary express shipping on orders over $75" },
+  { icon: Truck, text: `Free shipping on orders over ${formatCurrency(FREE_SHIPPING_THRESHOLD)}` },
   { icon: Sparkles, text: "Use code LUXE10 for 10% off your first order" },
   { icon: Truck, text: "Easy 30-day returns on every purchase" },
 ];

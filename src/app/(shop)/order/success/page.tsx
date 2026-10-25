@@ -1,16 +1,32 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { CheckCircle2, Mail, Package, Truck } from "lucide-react";
+import { CheckCircle2, Copy, Mail, MessageCircle, Package, Truck } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { SITE_CONFIG } from "@/lib/constants";
 
 function SuccessContent() {
   const params = useSearchParams();
   const orderNumber = params.get("n") ?? "LX-100000";
+  const email = params.get("email") ?? "";
+  const [copied, setCopied] = useState(false);
+  const whatsappText = `Hi Luxe, I just placed order ${orderNumber}.`;
+  const whatsappHref = `${SITE_CONFIG.social.whatsapp}?text=${encodeURIComponent(whatsappText)}`;
+
+  const copyNumber = async () => {
+    try {
+      await navigator.clipboard.writeText(orderNumber);
+      setCopied(true);
+      toast.success("Order number copied");
+    } catch {
+      toast.error("Could not copy the order number");
+    }
+  };
 
   return (
     <div className="container-tight py-16 lg:py-24">
@@ -43,7 +59,7 @@ function SuccessContent() {
           className="mt-3 text-sm text-muted-foreground"
         >
           Order <span className="font-medium text-foreground">{orderNumber}</span> is confirmed.
-          We've sent the details to your email.
+          {email ? ` A receipt is on its way to ${email}.` : " We've sent the details to your email."}
         </motion.p>
 
         <motion.div
@@ -81,10 +97,29 @@ function SuccessContent() {
         </motion.div>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button asChild>
-            <Link href={`/orders`}>Track your order</Link>
+          <Button type="button" variant="outline" onClick={copyNumber}>
+            <Copy className="h-4 w-4" />
+            {copied ? "Copied" : "Copy order number"}
           </Button>
           <Button asChild variant="outline">
+            <a href={whatsappHref} target="_blank" rel="noreferrer">
+              <MessageCircle className="h-4 w-4" />
+              Send on WhatsApp
+            </a>
+          </Button>
+          <Button asChild>
+            <Link href="/orders">Track your order</Link>
+          </Button>
+        </div>
+        <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          {email && (
+            <Button asChild variant="secondary">
+              <Link href={`/register?email=${encodeURIComponent(email)}`}>
+                Create an account with this email
+              </Link>
+            </Button>
+          )}
+          <Button asChild variant="ghost">
             <Link href="/products">Continue shopping</Link>
           </Button>
         </div>

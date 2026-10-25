@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Eye, Gift, Heart, Scale, ShoppingBag } from "lucide-react";
+import { Eye, Heart, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
 import { ActionTooltip } from "@/components/shared/action-tooltip";
@@ -14,10 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addItem } from "@/lib/store/slices/cart-slice";
-import {
-  addToCustomOffer,
-  toggleCompare,
-} from "@/lib/store/slices/commerce-slice";
 import { setCartOpen } from "@/lib/store/slices/ui-slice";
 import { toggleWishlist } from "@/lib/store/slices/wishlist-slice";
 import { calculateDiscount, cn, formatCurrency, productNeedsVariantChoice } from "@/lib/utils";
@@ -42,10 +38,6 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
     s.wishlist.items.some((i) => i.productId === product.id),
   );
   const discount = calculateDiscount(product.price, product.comparePrice);
-  const inCompare = useAppSelector((s) => s.commerce.compareIds.includes(product.id));
-  const inCustomOffer = useAppSelector((s) =>
-    s.commerce.customOfferItems.some((item) => item.productId === product.id),
-  );
 
   const primaryImage = product.images[0];
   const secondaryImage = product.images[1] ?? product.images[0];
@@ -170,44 +162,6 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
                     inWishlist && "fill-rose-500 text-rose-500",
                   )}
                 />
-              </button>
-            </ActionTooltip>
-
-            <ActionTooltip label={inCompare ? "Remove from compare" : "Compare products"}>
-              <button
-                type="button"
-                onClick={() => {
-                  dispatch(toggleCompare(product.id));
-                  toast.success(inCompare ? "Removed from compare" : "Added to compare");
-                }}
-                aria-label={inCompare ? "Remove from compare" : "Add to compare"}
-                className={iconBtnClass}
-              >
-                <Scale className={cn("h-4 w-4", inCompare && "text-accent")} />
-              </button>
-            </ActionTooltip>
-
-            <ActionTooltip
-              label={
-                inCustomOffer
-                  ? "Already in Custom Offer · tap to add more"
-                  : "Add to Custom Offer"
-              }
-            >
-              <button
-                type="button"
-                onClick={() => {
-                  dispatch(addToCustomOffer(product.id));
-                  toast.success(
-                    inCustomOffer
-                      ? `${product.name} quantity increased`
-                      : `${product.name} added to Custom Offer`,
-                  );
-                }}
-                aria-label="Add to custom offer"
-                className={iconBtnClass}
-              >
-                <Gift className={cn("h-4 w-4", inCustomOffer && "fill-accent text-accent")} />
               </button>
             </ActionTooltip>
           </div>

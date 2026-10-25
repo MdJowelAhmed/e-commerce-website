@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Check,
   Bell,
+  Gift,
   Heart,
   Minus,
   Package,
@@ -21,11 +23,13 @@ import { StarRating } from "@/components/shared/star-rating";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addItem } from "@/lib/store/slices/cart-slice";
 import {
   addRecentlyViewed,
   addStockAlert,
+  addToCustomOffer,
   toggleCompare,
 } from "@/lib/store/slices/commerce-slice";
 import { setCartOpen } from "@/lib/store/slices/ui-slice";
@@ -46,32 +50,52 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     s.wishlist.items.some((i) => i.productId === product.id),
   );
 
+  const availableSizes = product.sizes.filter((size) => size.available);
+  const requiresSizeChoice = availableSizes.length > 1;
   const [colorId, setColorId] = useState(product.colors[0]?.id ?? "");
-  const [sizeId, setSizeId] = useState(
-    product.sizes.find((s) => s.available)?.id ?? product.sizes[0]?.id ?? "",
-  );
+  const [sizeId, setSizeId] = useState(requiresSizeChoice ? "" : (availableSizes[0]?.id ?? ""));
   const [quantity, setQuantity] = useState(1);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [alertEmail, setAlertEmail] = useState("");
+  const [ctaInView, setCtaInView] = useState(true);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const sizeSectionRef = useRef<HTMLDivElement>(null);
   const inCompare = useAppSelector((s) => s.commerce.compareIds.includes(product.id));
+  const inCustomOffer = useAppSelector((s) =>
+    s.commerce.customOfferItems.some((item) => item.productId === product.id),
+  );
 
   useEffect(() => {
     dispatch(addRecentlyViewed(product.id));
   }, [dispatch, product.id]);
 
   const selectedColor = product.colors.find((c) => c.id === colorId) ?? product.colors[0];
-  const selectedSize = product.sizes.find((s) => s.id === sizeId) ?? product.sizes[0];
+  const selectedSize = product.sizes.find((s) => s.id === sizeId);
 
-  const variant = useMemo(
-    () =>
-      product.variants.find((v) => v.colorId === colorId && v.sizeId === sizeId) ??
-      product.variants[0],
-    [product.variants, colorId, sizeId],
-  );
+  const variant = useMemo(() => {
+    if (sizeId) {
+      return (
+        product.variants.find((v) => v.colorId === colorId && v.sizeId === sizeId) ??
+        product.variants[0]
+      );
+    }
+    return product.variants.find((v) => v.colorId === colorId) ?? product.variants[0];
+  }, [product.variants, colorId, sizeId]);
 
   useEffect(() => {
     setQuantity(1);
   }, [variant?.id]);
+
+  useEffect(() => {
+    const node = ctaRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setCtaInView(entry.isIntersecting),
+      { threshold: 0.4 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   const galleryImages = useMemo(() => {
     if (!variant?.imageId) return product.images;
@@ -80,10 +104,22 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     return [product.images[idx], ...product.images.filter((_, i) => i !== idx)];
   }, [product.images, variant?.imageId]);
 
-  const discount = calculateDiscount(variant.price, variant.comparePrice);
-  const inStock = variant.stock > 0 && selectedSize.available;
+  const displayPrice = selectedSize ? variant.price : product.price;
+  const displayCompare = selectedSize ? variant.comparePrice : product.comparePrice;
+  const discount = calculateDiscount(displayPrice, displayCompare);
+  const inStock = Boolean(selectedSize?.available && variant.stock > 0 && variant.sizeId === selectedSize.id);
+  const needsSize = requiresSizeChoice && !selectedSize;
+
+  const focusSize = () => {
+    sizeSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    toast.message("Choose a size first");
+  };
 
   const handleAddToCart = () => {
+    if (needsSize || !selectedSize || !selectedColor) {
+      focusSize();
+      return;
+    }
     if (!inStock) return;
     dispatch(
       addItem({
@@ -141,7 +177,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   };
 
   return (
-    <div className="container-wide py-10 lg:py-14">
+    <div className="container-wide py-10 pb-28 lg:py-14 lg:pb-14">
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -172,17 +208,17 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
           <div className="mt-5 flex items-baseline gap-3">
             <motion.span
-              key={variant.price}
+              key={displayPrice}
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               className="font-display text-3xl tracking-tight"
             >
-              {formatCurrency(variant.price)}
+              {formatCurrency(displayPrice)}
             </motion.span>
-            {variant.comparePrice && (
+            {displayCompare && (
               <>
                 <span className="text-lg text-muted-foreground line-through">
-                  {formatCurrency(variant.comparePrice)}
+                  {formatCurrency(displayCompare)}
                 </span>
                 <Badge variant="accent">-{discount}%</Badge>
               </>
@@ -226,13 +262,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </div>
           </div>
 
-          <div className="mt-6">
+          <div ref={sizeSectionRef} className="mt-6">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">Size</p>
+              <p className="text-sm font-medium">
+                Size
+                {needsSize && <span className="ml-2 text-xs font-normal text-accent">Select one</span>}
+              </p>
               <button
                 type="button"
                 onClick={() => setSizeGuideOpen(true)}
-                className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+                className="text-xs font-medium text-foreground underline underline-offset-4"
               >
                 Size guide
               </button>
@@ -243,9 +282,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 return (
                   <button
                     key={s.id}
-                    type="button"
-                    onClick={() => s.available && setSizeId(s.id)}
-                    disabled={!s.available}
+                  type="button"
+                  onClick={() => s.available && setSizeId(s.id)}
+                  disabled={!s.available}
+                  aria-pressed={isActive}
                     className={cn(
                       "relative min-w-14 rounded-full border px-4 py-2 text-sm transition",
                       isActive && "border-foreground bg-foreground text-background",
@@ -305,7 +345,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 </button>
               </div>
               <div className="text-sm">
-                {inStock ? (
+                {needsSize ? (
+                  <span className="text-muted-foreground">Choose a size to see availability</span>
+                ) : inStock ? (
                   <span className="inline-flex items-center gap-1.5 text-success">
                     <span className="h-2 w-2 rounded-full bg-success" />
                     In stock — {variant.stock} available
@@ -317,16 +359,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </div>
           </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div ref={ctaRef} className="mt-8 flex flex-col gap-3 sm:flex-row">
             <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
               <Button
                 size="xl"
                 className="w-full"
                 onClick={handleAddToCart}
-                disabled={!inStock}
+                disabled={!needsSize && !inStock}
               >
                 <ShoppingBag className="h-4 w-4" />
-                {inStock ? "Add to bag" : "Sold out"}
+                {needsSize ? "Select a size" : inStock ? "Add to bag" : "Sold out"}
               </Button>
             </motion.div>
             <motion.div whileTap={{ scale: 0.98 }}>
@@ -354,10 +396,32 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 {inCompare ? "Comparing" : "Compare"}
               </Button>
             </motion.div>
+            <motion.div whileTap={{ scale: 0.98 }}>
+              <Button
+                size="xl"
+                variant="outline"
+                onClick={() => {
+                  dispatch(addToCustomOffer(product.id));
+                  toast.success(
+                    inCustomOffer
+                      ? `${product.name} quantity increased`
+                      : `${product.name} added to Custom Offer`,
+                  );
+                }}
+                className="w-full sm:w-auto"
+              >
+                <Gift className="h-4 w-4" />
+                {inCustomOffer ? "In offer" : "Offer"}
+              </Button>
+            </motion.div>
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <ServicePill icon={Truck} title="Free shipping" subtitle="Over $75" />
+            <ServicePill
+              icon={Truck}
+              title="Free shipping"
+              subtitle={`Over ${formatCurrency(FREE_SHIPPING_THRESHOLD)}`}
+            />
             <ServicePill icon={RefreshCw} title="30-day returns" subtitle="Easy & free" />
             <ServicePill icon={ShieldCheck} title="Secure checkout" subtitle="SSL encrypted" />
           </div>
@@ -387,6 +451,28 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         </motion.div>
       </div>
       <SizeGuideDialog open={sizeGuideOpen} onOpenChange={setSizeGuideOpen} />
+      {!ctaInView && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 backdrop-blur md:hidden">
+          <div className="flex items-center gap-3">
+            <div className="relative h-12 w-10 shrink-0 overflow-hidden rounded-lg bg-secondary">
+              <Image
+                src={galleryImages[0]?.url ?? product.images[0].url}
+                alt=""
+                fill
+                sizes="40px"
+                className="object-cover"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium">{product.name}</p>
+              <p className="text-sm text-muted-foreground">{formatCurrency(displayPrice)}</p>
+            </div>
+            <Button type="button" onClick={handleAddToCart} disabled={!needsSize && !inStock}>
+              {needsSize ? "Select size" : inStock ? "Add" : "Sold out"}
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
