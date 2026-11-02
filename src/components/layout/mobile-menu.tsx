@@ -12,6 +12,7 @@ import {
   Package,
   RotateCcw,
   Search,
+  User,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -22,8 +23,9 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { setMobileMenuOpen, setSearchOpen } from "@/lib/store/slices/ui-slice";
 
 const ACCOUNT_LINKS = [
-  { href: "/custom-offer", label: "Custom Offer", icon: Gift },
+  { href: "/account", label: "My Account", icon: User },
   { href: "/orders", label: "My Orders", icon: Package },
+  { href: "/custom-offer", label: "Custom Offer", icon: Gift },
   { href: "/returns", label: "Returns", icon: RotateCcw },
   { href: "/rewards", label: "Rewards", icon: Award },
   { href: "/membership", label: "Membership", icon: Crown },

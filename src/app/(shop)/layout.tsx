@@ -2,9 +2,12 @@ import { Suspense } from "react";
 
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { CartDrawer } from "@/components/layout/cart-drawer";
+import { FloatingCompareBar } from "@/components/layout/floating-compare-bar";
 import { Footer } from "@/components/layout/footer";
+import { LiveChatWidget } from "@/components/layout/live-chat-widget";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { Navbar } from "@/components/layout/navbar";
+import { NewsletterPopup } from "@/components/layout/newsletter-popup";
 import { SearchDialog } from "@/components/layout/search-dialog";
 import { AbandonedCartTracker } from "@/features/cart/components/abandoned-cart-tracker";
 
@@ -29,6 +32,9 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
       </Suspense>
       <SearchDialog />
       <AbandonedCartTracker />
+      <FloatingCompareBar />
+      <LiveChatWidget />
+      <NewsletterPopup />
     </div>
   );
 }

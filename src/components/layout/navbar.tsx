@@ -14,6 +14,7 @@ import { selectCartCount, selectWishlistItems } from "@/lib/store/selectors";
 import { setCartOpen, setMobileMenuOpen, setSearchOpen } from "@/lib/store/slices/ui-slice";
 import { cn } from "@/lib/utils";
 
+import { CurrencySwitcher } from "./currency-switcher";
 import { ProfileMenu } from "./profile-menu";
 
 export function Navbar() {
@@ -179,6 +180,7 @@ export function Navbar() {
               )}
             </Link>
           </Button>
+          <CurrencySwitcher />
           <ProfileMenu />
         </div>
       </div>

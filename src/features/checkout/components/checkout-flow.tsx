@@ -9,7 +9,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
+  Calendar,
+  Clock,
   CreditCard,
+  Gift,
   Lock,
   Mail,
   ShieldCheck,
@@ -365,9 +368,17 @@ function ShippingStep({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const [selectedSlot, setSelectedSlot] = useState("anytime");
+  const [isGift, setIsGift] = useState(false);
+  const [giftNote, setGiftNote] = useState("");
+
   return (
-    <div className="space-y-5">
-      <h2 className="text-lg font-semibold">Shipping method</h2>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold">Shipping method</h2>
+        <p className="text-xs text-muted-foreground mt-0.5">Select your preferred courier service speed.</p>
+      </div>
+
       <RadioGroup value={value} onValueChange={(v) => onChange(v as ShippingMethod)}>
         <ShippingOption
           id="standard"
@@ -386,7 +397,79 @@ function ShippingStep({
           active={value === "express"}
         />
       </RadioGroup>
-      <div className="flex justify-between">
+
+      {/* Preferred Delivery Time Window */}
+      <div className="rounded-2xl border bg-secondary/20 p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">Preferred Delivery Slot</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Let our delivery team know the best time to reach you.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          {[
+            { id: "anytime", label: "Anytime", desc: "9:00 AM – 8:00 PM" },
+            { id: "morning", label: "Morning Slot", desc: "9:00 AM – 1:00 PM" },
+            { id: "afternoon", label: "Evening Slot", desc: "2:00 PM – 7:00 PM" },
+          ].map((slot) => (
+            <button
+              key={slot.id}
+              type="button"
+              onClick={() => setSelectedSlot(slot.id)}
+              className={cn(
+                "rounded-xl border p-2.5 text-left transition-all",
+                selectedSlot === slot.id
+                  ? "border-primary bg-primary/10 text-foreground"
+                  : "border-border/60 bg-background/60 hover:border-border",
+              )}
+            >
+              <p className="text-xs font-semibold">{slot.label}</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{slot.desc}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Gift Packaging & Personal Note */}
+      <div className="rounded-2xl border bg-secondary/20 p-4 space-y-3">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isGift}
+            onChange={(e) => setIsGift(e.target.checked)}
+            className="mt-1 rounded border-input text-primary"
+          />
+          <div>
+            <div className="flex items-center gap-2">
+              <Gift className="h-4 w-4 text-primary" />
+              <p className="text-sm font-semibold">This order is a gift</p>
+              <span className="text-[11px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                Complimentary
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              We&apos;ll pack your items in a signature Luxe gift box with satin ribbon and hide prices on the packing slip.
+            </p>
+          </div>
+        </label>
+
+        {isGift && (
+          <div className="pt-2 pl-7 space-y-1.5">
+            <Label htmlFor="giftNote" className="text-xs font-medium">Personalized Gift Message</Label>
+            <textarea
+              id="giftNote"
+              rows={2}
+              value={giftNote}
+              onChange={(e) => setGiftNote(e.target.value)}
+              placeholder="Write a sweet note to the recipient (e.g. Happy Birthday!)..."
+              className="w-full rounded-xl border border-input bg-background p-2.5 text-xs outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="flex justify-between pt-2">
         <Button type="button" variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" />
           Back

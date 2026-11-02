@@ -3,12 +3,15 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { MembershipTier } from "@/lib/constants";
 import type { StockAlert } from "@/types";
 
+export type SupportedCurrency = "BDT" | "USD" | "EUR";
+
 export interface CustomOfferItem {
   productId: string;
   quantity: number;
 }
 
 export interface CommerceState {
+  currency: SupportedCurrency;
   compareIds: string[];
   recentlyViewedIds: string[];
   stockAlerts: StockAlert[];
@@ -23,6 +26,7 @@ export interface CommerceState {
 export const COMMERCE_STORAGE_KEY = "luxe.commerce.v1";
 
 export const emptyCommerceState = (): CommerceState => ({
+  currency: "BDT",
   compareIds: [],
   recentlyViewedIds: [],
   stockAlerts: [],
@@ -47,6 +51,8 @@ export function loadCommerceFromStorage(): CommerceState | null {
     return {
       ...emptyCommerceState(),
       ...parsed,
+      currency:
+        parsed.currency === "USD" || parsed.currency === "EUR" ? parsed.currency : "BDT",
       compareIds: Array.isArray(parsed.compareIds) ? parsed.compareIds.slice(0, 4) : [],
       recentlyViewedIds: Array.isArray(parsed.recentlyViewedIds)
         ? parsed.recentlyViewedIds.slice(0, 8)
@@ -90,6 +96,9 @@ const commerceSlice = createSlice({
   reducers: {
     hydrateCommerce(_state, action: PayloadAction<CommerceState>) {
       return action.payload;
+    },
+    setCurrency(state, action: PayloadAction<SupportedCurrency>) {
+      state.currency = action.payload;
     },
     toggleCompare(state, action: PayloadAction<string>) {
       const id = action.payload;
@@ -173,6 +182,7 @@ const commerceSlice = createSlice({
 
 export const {
   hydrateCommerce,
+  setCurrency,
   toggleCompare,
   clearCompare,
   addRecentlyViewed,

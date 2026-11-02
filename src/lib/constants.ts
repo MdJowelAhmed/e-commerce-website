@@ -25,6 +25,7 @@ export const NAV_LINKS = [
   { href: "/products?category=men", label: "Men" },
   { href: "/products?category=women", label: "Women" },
   { href: "/products?category=accessories", label: "Accessories" },
+  { href: "/contact", label: "Contact" },
   { href: "/about", label: "About" },
 ] as const;
 
@@ -38,6 +39,7 @@ export const FOOTER_LINKS = {
   ],
   Support: [
     { href: "/orders", label: "Track Order" },
+    { href: "/contact", label: "Contact & FAQ" },
     { href: "/returns", label: "Returns & Refunds" },
     { href: "/wishlist", label: "Wishlist" },
     { href: "/compare", label: "Compare Products" },

@@ -65,6 +65,12 @@ export function ProfileMenu() {
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
+          <Link href="/account">
+            <User className="h-4 w-4" />
+            My Account & Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/orders">
             <Package className="h-4 w-4" />
             My Orders

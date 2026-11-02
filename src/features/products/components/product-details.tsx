@@ -37,7 +37,9 @@ import { toggleWishlist } from "@/lib/store/slices/wishlist-slice";
 import { calculateDiscount, cn, formatCurrency } from "@/lib/utils";
 import type { Product } from "@/types";
 
+import { FrequentlyBoughtTogether } from "./frequently-bought-together";
 import { ProductGallery } from "./product-gallery";
+import { ProductSocialShare } from "./product-social-share";
 import { SizeGuideDialog } from "./size-guide-dialog";
 
 interface ProductDetailsProps {
@@ -447,9 +449,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 ))}
               </ul>
             </div>
+            <Separator className="my-4" />
+            <ProductSocialShare productName={product.name} />
           </div>
         </motion.div>
       </div>
+
+      <FrequentlyBoughtTogether currentProduct={product} />
       <SizeGuideDialog open={sizeGuideOpen} onOpenChange={setSizeGuideOpen} />
       {!ctaInView && (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 backdrop-blur md:hidden">

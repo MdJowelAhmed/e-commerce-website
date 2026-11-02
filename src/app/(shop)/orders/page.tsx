@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
   Circle,
   Clock,
+  FileText,
   Package,
   PackageCheck,
   Truck,
@@ -14,9 +16,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { OrderInvoiceDialog } from "@/components/shared/order-invoice-dialog";
 import { useListOrdersQuery } from "@/lib/store/services/api";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
-import type { OrderStatus } from "@/types";
+import type { Order, OrderStatus } from "@/types";
 
 const STATUS_STEPS: { id: OrderStatus; label: string; icon: typeof Circle }[] = [
   { id: "pending", label: "Placed", icon: Clock },
@@ -36,6 +39,8 @@ const STATUS_INDEX: Record<OrderStatus, number> = {
 
 export default function OrdersPage() {
   const { data: orders, isLoading, isError, refetch } = useListOrdersQuery();
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<Order | null>(null);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
 
   return (
     <div className="container-wide py-10 lg:py-14">
@@ -79,7 +84,7 @@ export default function OrdersPage() {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.06 }}
-                className="rounded-2xl border bg-background p-6"
+                className="rounded-2xl border bg-background p-6 transition-shadow hover:shadow-sm"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
@@ -157,7 +162,19 @@ export default function OrdersPage() {
                       </div>
                     ))}
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 gap-1.5 text-xs"
+                      onClick={() => {
+                        setSelectedInvoiceOrder(order);
+                        setInvoiceOpen(true);
+                      }}
+                    >
+                      <FileText className="h-3.5 w-3.5" />
+                      Invoice
+                    </Button>
                     {order.status === "delivered" && (
                       <Link href="/returns" className="text-xs font-medium underline underline-offset-2">
                         Return items
@@ -175,6 +192,13 @@ export default function OrdersPage() {
           })}
         </div>
       )}
+
+      {/* Invoice Modal */}
+      <OrderInvoiceDialog
+        order={selectedInvoiceOrder}
+        open={invoiceOpen}
+        onOpenChange={setInvoiceOpen}
+      />
     </div>
   );
 }
