@@ -15,6 +15,7 @@ import {
   Scale,
   ShieldCheck,
   ShoppingBag,
+  Sparkles,
   Truck,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -38,7 +39,6 @@ import { calculateDiscount, cn, formatCurrency } from "@/lib/utils";
 import type { Product } from "@/types";
 
 import { AiOutfitGenerator } from "./ai-outfit-generator";
-import { InlineAiOutfit } from "./inline-ai-outfit";
 import { FrequentlyBoughtTogether } from "./frequently-bought-together";
 import { ProductGallery } from "./product-gallery";
 import { ProductSocialShare } from "./product-social-share";
@@ -420,8 +420,22 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </motion.div>
           </div>
 
-          {/* AI Outfit & Look Pairing Card (Immediate Above-The-Fold Visibility) */}
-          <InlineAiOutfit currentProduct={product} />
+          {/* Subtle prompt linking to the dedicated AI Outfit Generator */}
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById("ai-outfit-generator")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="group mt-3 flex w-full items-center justify-between rounded-xl border border-primary/30 bg-primary/5 px-3.5 py-2.5 text-xs text-primary transition hover:bg-primary/10"
+          >
+            <span className="flex items-center gap-2 font-medium">
+              <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
+              Complete the Look with AI Stylist
+            </span>
+            <span className="text-[11px] font-semibold text-primary/80 group-hover:text-primary flex items-center gap-0.5">
+              Save 15% Bundle ↓
+            </span>
+          </button>
 
           <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
             <ServicePill

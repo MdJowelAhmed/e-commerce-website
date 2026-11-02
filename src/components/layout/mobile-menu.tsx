@@ -63,17 +63,23 @@ export function MobileMenu() {
           animate="show"
         >
           <motion.div variants={itemVariants}>
-            <Link
-              href="/search"
-              onClick={() => dispatch(setMobileMenuOpen(false))}
-              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-semibold transition-colors bg-primary/10 text-primary hover:bg-primary/20 mb-2"
+            <button
+              type="button"
+              onClick={() => {
+                dispatch(setMobileMenuOpen(false));
+                dispatch(setSearchOpen(true));
+              }}
+              className="flex w-full items-center justify-between rounded-xl border border-border/70 bg-secondary/30 px-4 py-3 text-sm font-medium transition-colors hover:bg-secondary mb-3"
             >
-              <span className="inline-flex items-center gap-2.5">
-                <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
-                ✨ AI Semantic Search
+              <span className="inline-flex items-center gap-2.5 text-foreground/80">
+                <Search className="h-4 w-4 text-muted-foreground" />
+                <span>Search or ask AI...</span>
               </span>
-              <ChevronRight className="h-4 w-4 text-primary" />
-            </Link>
+              <span className="flex items-center gap-1 rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                <Sparkles className="h-3 w-3 text-amber-500" />
+                <span>AI</span>
+              </span>
+            </button>
           </motion.div>
           {NAV_LINKS.map((link) => {
             const isActive = isNavLinkActive(link.href, pathname, search);

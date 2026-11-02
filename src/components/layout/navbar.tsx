@@ -114,21 +114,29 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="flex items-center gap-1">
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-            className="hidden sm:inline-flex h-8 gap-1.5 rounded-full border-primary/40 bg-primary/10 px-3 text-xs font-semibold text-primary hover:bg-primary/20 transition shadow-xs"
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Unified Single Search Trigger (Desktop: interactive search bar | Mobile: single icon) */}
+          <button
+            type="button"
+            onClick={() => dispatch(setSearchOpen(true))}
+            className="hidden md:flex items-center gap-2.5 h-9 rounded-full border border-border/80 bg-secondary/40 px-3.5 text-xs text-muted-foreground transition hover:border-foreground/30 hover:bg-secondary/70 hover:text-foreground"
+            aria-label="Search products with AI"
           >
-            <Link href="/search">
-              <Sparkles className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
-              <span>AI Search</span>
-            </Link>
-          </Button>
+            <Search className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="font-normal">Search or ask AI...</span>
+            <span className="flex items-center gap-1 rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+              <Sparkles className="h-2.5 w-2.5 text-amber-500" />
+              <span>AI</span>
+            </span>
+            <kbd className="hidden lg:inline-flex rounded border bg-background/80 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+              ⌘K
+            </kbd>
+          </button>
+
           <Button
             variant="ghost"
             size="icon"
+            className="md:hidden"
             aria-label="Search"
             aria-keyshortcuts="Control+K"
             onClick={() => dispatch(setSearchOpen(true))}

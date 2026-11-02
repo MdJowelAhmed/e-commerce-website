@@ -22,7 +22,6 @@ export const SITE_CONFIG = {
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/products", label: "Shop" },
-  { href: "/search", label: "✨ AI Search" },
   { href: "/products?category=men", label: "Men" },
   { href: "/products?category=women", label: "Women" },
   { href: "/products?category=accessories", label: "Accessories" },
