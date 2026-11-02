@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trackExperimentEvent, useExperiment } from "@/hooks/use-experiment";
 import { SITE_IMAGES } from "@/lib/mock-data/media";
+import { HeroImageParallax } from "./hero-image-parallax";
 
 const HERO_IMAGE_LEFT = SITE_IMAGES.heroLeft;
 const HERO_IMAGE_RIGHT = SITE_IMAGES.heroRight;
@@ -125,58 +126,12 @@ export function HeroSection() {
 
         <motion.div
           style={{ y: fgY }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
           className="relative aspect-square lg:aspect-auto"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, rotate: -3 }}
-            animate={{ opacity: 1, scale: 1, rotate: -3 }}
-            transition={{ duration: 1, delay: 0.3, ease: easeOut }}
-            className="absolute left-0 top-0 h-[70%] w-[55%] overflow-hidden rounded-3xl border bg-secondary shadow-xl"
-          >
-            <Image
-              src={HERO_IMAGE_LEFT}
-              alt="Hero image left"
-              fill
-              priority
-              sizes="(min-width: 1024px) 30vw, 60vw"
-              className="object-cover"
-            />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, rotate: 3 }}
-            animate={{ opacity: 1, scale: 1, rotate: 3 }}
-            transition={{ duration: 1, delay: 0.5, ease: easeOut }}
-            className="absolute bottom-0 right-0 h-[75%] w-[60%] overflow-hidden rounded-3xl border bg-secondary shadow-xl"
-          >
-            <Image
-              src={HERO_IMAGE_RIGHT}
-              alt="Hero image right"
-              fill
-              priority
-              sizes="(min-width: 1024px) 30vw, 60vw"
-              className="object-cover"
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-            className="glass-card absolute left-[40%] top-[45%] hidden p-3 lg:block"
-          >
-            <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-foreground text-background">
-                <Sparkles className="h-4 w-4" />
-              </div>
-              <div className="text-xs">
-                <p className="font-semibold">Free 30-day returns</p>
-                <p className="text-muted-foreground">On every order</p>
-              </div>
-            </div>
-          </motion.div>
+          <HeroImageParallax
+            imageLeft={HERO_IMAGE_LEFT}
+            imageRight={HERO_IMAGE_RIGHT}
+          />
         </motion.div>
       </div>
     </section>
