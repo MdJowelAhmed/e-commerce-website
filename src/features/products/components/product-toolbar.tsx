@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { setSearchOpen } from "@/lib/store/slices/ui-slice";
 import {
   Select,
   SelectContent,
@@ -25,6 +27,7 @@ interface ProductToolbarProps {
 }
 
 export function ProductToolbar({ total, onOpenFilters }: ProductToolbarProps) {
+  const dispatch = useAppDispatch();
   const { filters, updateFilters, activeFilterCount, clearFilters } = useProductsFilters();
   const { data: facets } = useGetCatalogFacetsQuery();
   const [search, setSearch] = useState(filters.search ?? "");
@@ -72,6 +75,17 @@ export function ProductToolbar({ total, onOpenFilters }: ProductToolbarProps) {
             </button>
           )}
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          type="button"
+          onClick={() => dispatch(setSearchOpen(true))}
+          className="h-10 gap-1.5 text-xs text-primary border-primary/30 bg-primary/5 hover:bg-primary/10 font-semibold"
+          title="Open AI Natural Language Search"
+        >
+          <Sparkles className="h-4 w-4" />
+          <span className="hidden sm:inline">AI Natural Search</span>
+        </Button>
         <Button variant="outline" className="lg:hidden" onClick={onOpenFilters}>
           <SlidersHorizontal className="h-4 w-4" />
           Filters

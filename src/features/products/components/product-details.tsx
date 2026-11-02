@@ -37,6 +37,8 @@ import { toggleWishlist } from "@/lib/store/slices/wishlist-slice";
 import { calculateDiscount, cn, formatCurrency } from "@/lib/utils";
 import type { Product } from "@/types";
 
+import { AiOutfitGenerator } from "./ai-outfit-generator";
+import { InlineAiOutfit } from "./inline-ai-outfit";
 import { FrequentlyBoughtTogether } from "./frequently-bought-together";
 import { ProductGallery } from "./product-gallery";
 import { ProductSocialShare } from "./product-social-share";
@@ -418,6 +420,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </motion.div>
           </div>
 
+          {/* AI Outfit & Look Pairing Card (Immediate Above-The-Fold Visibility) */}
+          <InlineAiOutfit currentProduct={product} />
+
           <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
             <ServicePill
               icon={Truck}
@@ -454,6 +459,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
         </motion.div>
       </div>
+
+      {/* Luxe AI Stylist Outfit Generator */}
+      <AiOutfitGenerator currentProduct={product} />
 
       <FrequentlyBoughtTogether currentProduct={product} />
       <SizeGuideDialog open={sizeGuideOpen} onOpenChange={setSizeGuideOpen} />

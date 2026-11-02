@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Heart, Menu, Scale, Search, ShoppingBag } from "lucide-react";
+import { Heart, Menu, Scale, Search, ShoppingBag, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
@@ -115,6 +115,17 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="hidden sm:inline-flex h-8 gap-1.5 rounded-full border-primary/40 bg-primary/10 px-3 text-xs font-semibold text-primary hover:bg-primary/20 transition shadow-xs"
+          >
+            <Link href="/search">
+              <Sparkles className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
+              <span>AI Search</span>
+            </Link>
+          </Button>
           <Button
             variant="ghost"
             size="icon"

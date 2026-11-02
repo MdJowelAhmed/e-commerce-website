@@ -12,6 +12,7 @@ import {
   Package,
   RotateCcw,
   Search,
+  Sparkles,
   User,
 } from "lucide-react";
 
@@ -62,20 +63,17 @@ export function MobileMenu() {
           animate="show"
         >
           <motion.div variants={itemVariants}>
-            <button
-              type="button"
-              onClick={() => {
-                dispatch(setMobileMenuOpen(false));
-                dispatch(setSearchOpen(true));
-              }}
-              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors hover:bg-secondary"
+            <Link
+              href="/search"
+              onClick={() => dispatch(setMobileMenuOpen(false))}
+              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-semibold transition-colors bg-primary/10 text-primary hover:bg-primary/20 mb-2"
             >
-              <span className="inline-flex items-center gap-3 text-foreground/80">
-                <Search className="h-4 w-4 text-muted-foreground" />
-                Search
+              <span className="inline-flex items-center gap-2.5">
+                <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
+                ✨ AI Semantic Search
               </span>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </button>
+              <ChevronRight className="h-4 w-4 text-primary" />
+            </Link>
           </motion.div>
           {NAV_LINKS.map((link) => {
             const isActive = isNavLinkActive(link.href, pathname, search);
