@@ -99,27 +99,36 @@ export function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.7 }}
-            className="mt-10 flex items-center gap-6"
+            className="mt-10 flex flex-wrap items-center gap-6"
           >
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((i) => (
-                <Image
-                  key={i}
-                  src={`https://api.dicebear.com/9.x/avataaars/png?seed=hero${i}&size=72`}
-                  alt=""
-                  width={36}
-                  height={36}
-                  unoptimized
-                  className="h-9 w-9 rounded-full border-2 border-background bg-secondary"
-                />
-              ))}
-            </div>
-            <div className="text-xs">
-              <div className="flex items-center gap-1 font-medium">
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                4.9 · 12,400+ reviews
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <Image
+                    key={i}
+                    src={`https://api.dicebear.com/9.x/avataaars/png?seed=hero${i}&size=72`}
+                    alt=""
+                    width={36}
+                    height={36}
+                    unoptimized
+                    className="h-9 w-9 rounded-full border-2 border-background bg-secondary"
+                  />
+                ))}
               </div>
-              <p className="text-muted-foreground">Loved by tastemakers worldwide</p>
+              <div className="text-xs">
+                <div className="flex items-center gap-1 font-medium">
+                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                  4.9 · 12,400+ reviews
+                </div>
+                <p className="text-muted-foreground">Loved by tastemakers in Bangladesh</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full border border-border/80 bg-background/60 px-3 py-1 text-xs font-medium text-foreground/80 backdrop-blur-md shadow-xs">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Same-Day Dhaka Delivery
+              </span>
             </div>
           </motion.div>
         </motion.div>

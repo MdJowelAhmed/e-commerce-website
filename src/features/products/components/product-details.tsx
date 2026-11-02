@@ -210,6 +210,22 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </span>
           </div>
 
+          {/* Social Proof & Urgency Indicator */}
+          <div className="mt-3.5 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500" />
+              </span>
+              <span>High Demand · 14 shoppers viewing</span>
+            </span>
+            {variant && variant.stock <= 8 && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/20 bg-rose-500/10 px-2.5 py-0.5 text-xs font-semibold text-rose-600 dark:text-rose-400">
+                ⚡ Only {variant.stock} left in stock
+              </span>
+            )}
+          </div>
+
           <div className="mt-5 flex items-baseline gap-3">
             <motion.span
               key={displayPrice}
@@ -447,6 +463,28 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <ServicePill icon={ShieldCheck} title="Secure checkout" subtitle="SSL encrypted" />
           </div>
 
+          {/* Payment & Trust Strip for Bangladesh */}
+          <div className="mt-4 rounded-2xl border border-border/70 bg-secondary/30 p-3.5">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+              <span className="font-medium text-foreground">Accepted Payment Methods</span>
+              <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">✓ 100% Secure Checkout</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-lg border bg-background px-2.5 py-1 text-xs font-bold text-[#E2136E] shadow-2xs">
+                bKash
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-lg border bg-background px-2.5 py-1 text-xs font-bold text-[#F7941D] shadow-2xs">
+                Nagad
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-lg border bg-background px-2.5 py-1 text-xs font-medium text-foreground shadow-2xs">
+                Visa / Master
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-lg border bg-background px-2.5 py-1 text-xs font-medium text-foreground shadow-2xs">
+                Cash on Delivery
+              </span>
+            </div>
+          </div>
+
           <Separator className="my-8" />
 
           <div className="space-y-4 text-sm">
@@ -479,27 +517,77 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
       <FrequentlyBoughtTogether currentProduct={product} />
       <SizeGuideDialog open={sizeGuideOpen} onOpenChange={setSizeGuideOpen} />
+      {/* Upgraded Sticky Floating Add-to-Bag Bar (Mobile & Desktop) */}
       {!ctaInView && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 backdrop-blur md:hidden">
-          <div className="flex items-center gap-3">
-            <div className="relative h-12 w-10 shrink-0 overflow-hidden rounded-lg bg-secondary">
-              <Image
-                src={galleryImages[0]?.url ?? product.images[0].url}
-                alt=""
-                fill
-                sizes="40px"
-                className="object-cover"
-              />
+        <motion.div
+          initial={{ y: 80, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 80, opacity: 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 p-3 sm:p-3.5 shadow-2xl backdrop-blur-xl"
+        >
+          <div className="container-wide flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="relative h-12 w-10 shrink-0 overflow-hidden rounded-lg bg-secondary border">
+                <Image
+                  src={galleryImages[0]?.url ?? product.images[0].url}
+                  alt={product.name}
+                  fill
+                  sizes="48px"
+                  className="object-cover"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold tracking-tight">{product.name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-bold text-foreground">{formatCurrency(displayPrice)}</p>
+                  {displayCompare && (
+                    <span className="text-xs text-muted-foreground line-through">
+                      {formatCurrency(displayCompare)}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{product.name}</p>
-              <p className="text-sm text-muted-foreground">{formatCurrency(displayPrice)}</p>
+
+            {/* Size Selector in Sticky Bar for Desktop */}
+            {product.sizes.length > 1 && (
+              <div className="hidden md:flex items-center gap-1.5">
+                <span className="text-xs text-muted-foreground mr-1">Size:</span>
+                {product.sizes.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    disabled={!s.available}
+                    onClick={() => setSizeId(s.id)}
+                    className={cn(
+                      "px-2.5 py-1 rounded-full text-xs font-medium border transition",
+                      s.id === sizeId
+                        ? "bg-foreground text-background border-foreground font-semibold"
+                        : "bg-background text-foreground hover:border-foreground/50",
+                      !s.available && "opacity-40 cursor-not-allowed line-through",
+                    )}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="flex items-center gap-2.5 shrink-0">
+              <Button
+                size="lg"
+                type="button"
+                onClick={handleAddToCart}
+                disabled={!needsSize && !inStock}
+                className="shadow-lg px-5 sm:px-6 gap-2"
+              >
+                <ShoppingBag className="h-4 w-4" />
+                <span>{needsSize ? "Select size" : inStock ? "Add to bag" : "Sold out"}</span>
+              </Button>
             </div>
-            <Button type="button" onClick={handleAddToCart} disabled={!needsSize && !inStock}>
-              {needsSize ? "Select size" : inStock ? "Add" : "Sold out"}
-            </Button>
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );

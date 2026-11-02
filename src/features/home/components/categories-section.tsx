@@ -149,6 +149,13 @@ function CategoryCardGsap({ category, index }: { category: Category; index: numb
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 group-hover:from-black/90 pointer-events-none" />
 
+        {/* Category Pill Tag */}
+        <div className="absolute top-4 left-4 pointer-events-none z-10">
+          <span className="inline-flex items-center rounded-full border border-white/20 bg-black/40 px-2.5 py-1 text-[11px] font-medium tracking-wide text-white backdrop-blur-md">
+            {index === 0 ? "Trending Edit" : index === 1 ? "New Season" : index === 2 ? "Fine Craft" : "Artisanal"}
+          </span>
+        </div>
+
         <div className="absolute inset-x-5 bottom-5 flex items-end justify-between text-white pointer-events-none">
           <div>
             <h3 className="font-display text-2xl tracking-tight md:text-3xl font-semibold">

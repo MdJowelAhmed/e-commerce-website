@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Minus, Plus, ShoppingBag, Sparkles, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -15,13 +16,14 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
+import { PRODUCTS } from "@/lib/mock-data/products";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   selectCartCount,
   selectCartItems,
   selectCartTotals,
 } from "@/lib/store/selectors";
-import { removeItem, updateQuantity } from "@/lib/store/slices/cart-slice";
+import { addItem, removeItem, updateQuantity } from "@/lib/store/slices/cart-slice";
 import { setCartOpen } from "@/lib/store/slices/ui-slice";
 import { cn, formatCurrency } from "@/lib/utils";
 
@@ -31,6 +33,35 @@ export function CartDrawer() {
   const items = useAppSelector(selectCartItems);
   const cartCount = useAppSelector(selectCartCount);
   const totals = useAppSelector(selectCartTotals);
+
+  const upsellProducts = PRODUCTS.filter(
+    (p) => p.category === "accessories" && !items.some((i) => i.productId === p.id),
+  ).slice(0, 2);
+
+  const handleAddUpsell = (product: typeof PRODUCTS[number]) => {
+    const color = product.colors[0];
+    const size = product.sizes[0];
+    const variant = product.variants[0];
+    dispatch(
+      addItem({
+        id: product.id,
+        productId: product.id,
+        productSlug: product.slug,
+        name: product.name,
+        imageUrl: product.images[0].url,
+        price: variant ? variant.price : product.price,
+        comparePrice: variant ? variant.comparePrice : product.comparePrice,
+        quantity: 1,
+        variantId: variant ? variant.id : `${product.id}-default`,
+        colorId: color ? color.id : "default",
+        colorName: color ? color.name : "Default",
+        sizeId: size ? size.id : "os",
+        sizeLabel: size ? size.label : "OS",
+        stock: variant ? variant.stock : product.stock,
+      }),
+    );
+    toast.success(`${product.name} added to your bag`);
+  };
 
   const progress = Math.min(
     100,
@@ -57,21 +88,29 @@ export function CartDrawer() {
         </SheetHeader>
 
         {items.length > 0 && (
-          <div className="border-b bg-secondary/40 px-6 py-3 text-sm">
+          <div className="border-b bg-secondary/40 px-6 py-3.5 text-sm">
             {remaining > 0 ? (
-              <p className="text-foreground/80">
-                Add <span className="font-semibold">{formatCurrency(remaining)}</span> more for{" "}
-                <span className="font-semibold">free shipping</span>
+              <p className="text-foreground/80 text-xs sm:text-sm">
+                Add <span className="font-semibold text-foreground">{formatCurrency(remaining)}</span> more for{" "}
+                <span className="font-semibold text-accent">free nationwide shipping</span>
               </p>
             ) : (
-              <p className="text-success">You've unlocked free shipping</p>
+              <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-xs sm:text-sm flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4" />
+                <span>You&apos;ve unlocked FREE nationwide shipping!</span>
+              </p>
             )}
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-background">
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-background border">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="h-full rounded-full bg-gradient-to-r from-accent to-amber-500"
+                className={cn(
+                  "h-full rounded-full transition-all",
+                  remaining <= 0
+                    ? "bg-gradient-to-r from-emerald-500 to-teal-400"
+                    : "bg-gradient-to-r from-accent to-amber-500",
+                )}
               />
             </div>
           </div>
@@ -204,6 +243,47 @@ export function CartDrawer() {
                   </motion.li>
                 ))}
               </motion.ul>
+            )}
+
+            {items.length > 0 && upsellProducts.length > 0 && (
+              <div className="border-t bg-secondary/20 p-4">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                  <Sparkles className="h-3 w-3 text-amber-500" />
+                  <span>Complete Your Look — Quick Add</span>
+                </p>
+                <div className="space-y-2">
+                  {upsellProducts.map((p) => (
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between gap-3 rounded-xl border bg-background p-2.5 shadow-2xs transition hover:border-foreground/30"
+                    >
+                      <div className="relative h-11 w-10 shrink-0 overflow-hidden rounded-lg bg-secondary">
+                        <Image
+                          src={p.images[0].url}
+                          alt={p.name}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-semibold">{p.name}</p>
+                        <p className="text-xs text-muted-foreground font-medium">
+                          {formatCurrency(p.price)}
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-xs font-medium rounded-lg"
+                        onClick={() => handleAddUpsell(p)}
+                      >
+                        + Add
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </AnimatePresence>
         </div>

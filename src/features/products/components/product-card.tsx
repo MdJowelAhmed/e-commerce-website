@@ -10,7 +10,6 @@ import { toast } from "sonner";
 
 import { ActionTooltip } from "@/components/shared/action-tooltip";
 import { StarRating } from "@/components/shared/star-rating";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addItem } from "@/lib/store/slices/cart-slice";
@@ -32,6 +31,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
   const router = useRouter();
   const [hovered, setHovered] = useState(false);
   const [showAlt, setShowAlt] = useState(false);
+  const [activeColorName, setActiveColorName] = useState<string | null>(null);
   const needsChoice = productNeedsVariantChoice(product);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const inWishlist = useAppSelector((s) =>
@@ -107,7 +107,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
       }}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-secondary">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-secondary shadow-xs transition-all duration-500 group-hover:shadow-xl group-hover:shadow-black/5">
         <Link href={`/product/${product.slug}`} className="absolute inset-0 block">
           <motion.div
             animate={{ scale: hovered ? 1.04 : 1 }}
@@ -143,8 +143,16 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
 
         <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-2">
           <div className="flex flex-col gap-1.5">
-            {product.isNew && <Badge>New</Badge>}
-            {discount > 0 && <Badge variant="accent">-{discount}%</Badge>}
+            {product.isNew && (
+              <span className="inline-flex items-center rounded-full border border-black/10 bg-white/85 px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase text-neutral-900 shadow-xs backdrop-blur-md dark:border-white/20 dark:bg-black/75 dark:text-white">
+                New
+              </span>
+            )}
+            {discount > 0 && (
+              <span className="inline-flex items-center rounded-full border border-rose-500/20 bg-rose-600/90 px-2 py-0.5 text-[10px] font-semibold text-white shadow-xs backdrop-blur-md">
+                -{discount}%
+              </span>
+            )}
           </div>
           <div className="pointer-events-auto flex flex-col gap-2">
             <ActionTooltip
@@ -242,23 +250,34 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
               </span>
             )}
           </div>
-          <div
-            className="flex -space-x-1"
-            role="list"
-            aria-label={`Colors: ${product.colors
-              .slice(0, 4)
-              .map((color) => color.name)
-              .join(", ")}`}
-          >
-            {product.colors.slice(0, 4).map((c) => (
-              <span
-                key={c.id}
-                role="listitem"
-                aria-label={c.name}
-                className="h-3.5 w-3.5 rounded-full border border-background ring-1 ring-border"
-                style={{ backgroundColor: c.hex }}
-              />
-            ))}
+          <div className="flex items-center gap-1.5">
+            {activeColorName && (
+              <span className="text-[10px] font-medium text-muted-foreground animate-in fade-in duration-200">
+                {activeColorName}
+              </span>
+            )}
+            <div
+              className="flex items-center -space-x-1"
+              role="list"
+              aria-label={`Colors: ${product.colors
+                .slice(0, 4)
+                .map((color) => color.name)
+                .join(", ")}`}
+            >
+              {product.colors.slice(0, 4).map((c) => (
+                <ActionTooltip key={c.id} label={c.name} side="top">
+                  <button
+                    type="button"
+                    role="listitem"
+                    aria-label={c.name}
+                    onMouseEnter={() => setActiveColorName(c.name)}
+                    onMouseLeave={() => setActiveColorName(null)}
+                    className="h-3.5 w-3.5 rounded-full border border-background ring-1 ring-border transition-transform hover:scale-125 hover:z-10 focus:outline-none"
+                    style={{ backgroundColor: c.hex }}
+                  />
+                </ActionTooltip>
+              ))}
+            </div>
           </div>
         </div>
       </div>
