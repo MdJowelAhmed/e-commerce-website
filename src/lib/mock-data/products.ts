@@ -88,11 +88,6 @@ export const PRODUCTS: Product[] = [
         url: PRODUCT_IMAGES["p-001"][2],
         alt: "lifestyle",
       },
-      {
-        id: "p-001-4",
-        url: PRODUCT_IMAGES["p-001"][3],
-        alt: "back",
-      }
     ],
     colors: [baseColors[0], baseColors[2], baseColors[4]],
     sizes: baseSizes,
@@ -290,17 +285,17 @@ export const PRODUCTS: Product[] = [
       {
         id: "p-005-1",
         url: PRODUCT_IMAGES["p-005"][0],
-        alt: "on model",
+        alt: "folded linen shirts",
       },
       {
         id: "p-005-2",
         url: PRODUCT_IMAGES["p-005"][1],
-        alt: "flat",
+        alt: "linen shirt on model",
       },
       {
         id: "p-005-3",
         url: PRODUCT_IMAGES["p-005"][2],
-        alt: "collar detail",
+        alt: "linen collar and button detail",
       }
     ],
     colors: [baseColors[1], baseColors[2], baseColors[3]],
@@ -341,12 +336,17 @@ export const PRODUCTS: Product[] = [
       {
         id: "p-006-1",
         url: PRODUCT_IMAGES["p-006"][0],
-        alt: "front",
+        alt: "aviator sunglasses front",
       },
       {
         id: "p-006-2",
         url: PRODUCT_IMAGES["p-006"][1],
-        alt: "on model",
+        alt: "sunglasses frame angle",
+      },
+      {
+        id: "p-006-3",
+        url: PRODUCT_IMAGES["p-006"][2],
+        alt: "sunglasses lifestyle",
       }
     ],
     colors: [baseColors[0], baseColors[4]],
@@ -445,7 +445,12 @@ export const PRODUCTS: Product[] = [
       {
         id: "p-008-2",
         url: PRODUCT_IMAGES["p-008"][1],
-        alt: "on foot",
+        alt: "suede loafer angle",
+      },
+      {
+        id: "p-008-3",
+        url: PRODUCT_IMAGES["p-008"][2],
+        alt: "suede texture",
       }
     ],
     colors: [baseColors[0], baseColors[4], baseColors[3]],
@@ -543,6 +548,11 @@ export const PRODUCTS: Product[] = [
         id: "p-010-2",
         url: PRODUCT_IMAGES["p-010"][1],
         alt: "table lifestyle",
+      },
+      {
+        id: "p-010-3",
+        url: PRODUCT_IMAGES["p-010"][2],
+        alt: "ceramic glaze detail",
       }
     ],
     colors: [baseColors[1], baseColors[2]],
@@ -583,12 +593,17 @@ export const PRODUCTS: Product[] = [
       {
         id: "p-011-1",
         url: PRODUCT_IMAGES["p-011"][0],
-        alt: "pair",
+        alt: "pearl drop earrings pair",
       },
       {
         id: "p-011-2",
         url: PRODUCT_IMAGES["p-011"][1],
-        alt: "worn",
+        alt: "pearl jewelry close-up",
+      },
+      {
+        id: "p-011-3",
+        url: PRODUCT_IMAGES["p-011"][2],
+        alt: "earring luster detail",
       }
     ],
     colors: [baseColors[1]],
@@ -624,17 +639,17 @@ export const PRODUCTS: Product[] = [
       {
         id: "p-012-1",
         url: PRODUCT_IMAGES["p-012"][0],
-        alt: "on model",
+        alt: "hooded technical parka front",
       },
       {
         id: "p-012-2",
         url: PRODUCT_IMAGES["p-012"][1],
-        alt: "shell detail",
+        alt: "waterproof shell and zipper detail",
       },
       {
         id: "p-012-3",
         url: PRODUCT_IMAGES["p-012"][2],
-        alt: "collection",
+        alt: "parka in cold weather",
       }
     ],
     colors: [baseColors[0], baseColors[3], baseColors[5]],
