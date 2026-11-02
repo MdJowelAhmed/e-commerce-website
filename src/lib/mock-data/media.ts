@@ -4,7 +4,7 @@
  */
 
 const q = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=85`;
 
 export const SITE_IMAGES = {
   // Original banner frames (intentionally restored)
@@ -85,5 +85,42 @@ export const PRODUCT_IMAGES = {
     q("photo-1544923246-77387bec3e16"),
     q("photo-1547949003-9792a18a2601"),
     q("photo-1489987707025-020f04d379a6"),
+  ],
+  "p-013": [
+    q("photo-1596755094514-f87e34085b2c"),
+    q("photo-1602810318383-e386cc2a3ccf"),
+    q("photo-1622445275463-afa2ab738c34"),
+  ],
+  "p-014": [
+    q("photo-1473966968600-fa801b869a1a"),
+    q("photo-1624378439575-d8705ad7ae80"),
+    q("photo-1594633312681-425c7b97ccd1"),
+  ],
+  "p-015": [
+    q("photo-1533867617858-e7b97e060509"),
+    q("photo-1560343090-f0409e92791a"),
+    q("photo-1582897085656-c636d006a246"),
+  ],
+  "p-016": [
+    q("photo-1524805444758-089113d48a6d"),
+    q("photo-1522335789203-aabd1fc54bc9"),
+    q("photo-1508057198894-247b23fe5ade"),
+  ],
+  "p-017": [
+    q("photo-1584273143981-41c073dfe8f8"),
+    q("photo-1591047139829-d91aecb6caea"),
+    q("photo-1534528741775-53994a69daeb"),
+  ],
+  "p-018": [
+    q("photo-1601924994987-69e26d50dc26"),
+    q("photo-1584917865442-de89df76afd3"),
+  ],
+  "p-019": [
+    q("photo-1434389677669-e08b4cac3105"),
+    q("photo-1576566588028-4147f3842f27"),
+  ],
+  "p-020": [
+    q("photo-1544923246-77387bec3e16"),
+    q("photo-1551028719-00167b16eac5"),
   ],
 } as const;

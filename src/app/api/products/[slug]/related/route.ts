@@ -9,6 +9,6 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  const related = getRelatedProducts(slug, 4);
+  const related = getRelatedProducts(slug, 8);
   return NextResponse.json(related);
 }

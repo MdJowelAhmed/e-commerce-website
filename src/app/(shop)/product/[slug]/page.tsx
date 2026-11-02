@@ -42,7 +42,7 @@ export default async function ProductPage({ params }: PageProps) {
   if (!product) notFound();
 
   const reviews = getReviewsForProduct(product.id);
-  const related = getRelatedProducts(product.slug, 4);
+  const related = getRelatedProducts(product.slug, 8);
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
