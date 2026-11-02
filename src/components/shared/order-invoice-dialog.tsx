@@ -36,7 +36,7 @@ export function OrderInvoiceDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 sm:p-6 print:m-0 print:p-0 print:border-none print:shadow-none">
         <div id="printable-invoice" className="p-6 bg-background rounded-xl">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6 pr-8 sm:pr-10">
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-serif text-2xl font-bold tracking-tight text-primary">

@@ -35,7 +35,7 @@ export function SizeGuideDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
-        <DialogTitle className="font-display text-2xl">Size guide & fit finder</DialogTitle>
+        <DialogTitle className="font-display text-2xl pr-8">Size guide & fit finder</DialogTitle>
         <p className="text-sm text-muted-foreground">
           Enter your chest measurement in centimetres for a quick recommendation.
         </p>

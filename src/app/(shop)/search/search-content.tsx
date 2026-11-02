@@ -15,7 +15,6 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/features/products/components/product-card";
 import { performAiSemanticSearch, type AiSearchResult } from "@/lib/ai-search";
 import { PRODUCTS } from "@/lib/mock-data/products";
@@ -128,11 +127,12 @@ export function SearchPageContent() {
             )}
           </div>
 
-          <Input
+          <input
+            type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="e.g. Men's linen shirt under ৳3,000 for summer beach party..."
-            className="border-0 bg-transparent text-sm sm:text-base focus-visible:ring-0 focus-visible:ring-offset-0 h-11"
+            className="flex-1 bg-transparent px-3 text-sm sm:text-base text-foreground placeholder:text-muted-foreground/60 outline-none border-none focus:outline-none focus:ring-0 shadow-none h-11"
           />
 
           {query && (

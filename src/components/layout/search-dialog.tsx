@@ -8,7 +8,6 @@ import { Loader2, Search, Sparkles, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { performAiSemanticSearch, type AiSearchResult } from "@/lib/ai-search";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { setSearchOpen } from "@/lib/store/slices/ui-slice";
@@ -89,62 +88,75 @@ export function SearchDialog() {
 
   return (
     <Dialog open={open} onOpenChange={(v) => dispatch(setSearchOpen(v))}>
-      <DialogContent className="top-[10%] max-w-2xl translate-y-0 gap-0 p-0 rounded-3xl border shadow-2xl overflow-hidden">
+      <DialogContent hideClose className="top-[10%] max-w-2xl translate-y-0 gap-0 p-0 rounded-3xl border shadow-2xl overflow-hidden">
         <DialogTitle className="sr-only">Search products</DialogTitle>
 
         {/* Top Mode Header */}
-        <div className="flex items-center justify-between px-5 pt-3 pb-2 bg-secondary/30 border-b text-xs">
+        <div className="flex items-center justify-between px-4 py-2.5 bg-secondary/30 border-b text-xs">
           <div className="flex items-center gap-2">
             <span className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10 text-primary">
-              <Sparkles className="h-3 w-3" />
+              <Sparkles className="h-3 w-3 text-amber-500" />
             </span>
             <span className="font-semibold text-primary">Luxe AI Semantic Search</span>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setIsAiMode(true)}
-              className={cn(
-                "px-2.5 py-1 rounded-full font-medium transition",
-                isAiMode
-                  ? "bg-primary text-primary-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              AI Natural Mode
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsAiMode(false)}
-              className={cn(
-                "px-2.5 py-1 rounded-full font-medium transition",
-                !isAiMode
-                  ? "bg-primary text-primary-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              Exact Keyword
-            </button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0.5 rounded-full bg-background border p-0.5">
+              <button
+                type="button"
+                onClick={() => setIsAiMode(true)}
+                className={cn(
+                  "px-2.5 py-1 rounded-full font-medium transition text-[11px]",
+                  isAiMode
+                    ? "bg-primary text-primary-foreground shadow-xs"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                AI Natural Mode
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsAiMode(false)}
+                className={cn(
+                  "px-2.5 py-1 rounded-full font-medium transition text-[11px]",
+                  !isAiMode
+                    ? "bg-primary text-primary-foreground shadow-xs"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                Exact Keyword
+              </button>
+            </div>
+
             <button
               type="button"
               onClick={() => {
                 dispatch(setSearchOpen(false));
                 router.push(query ? `/search?q=${encodeURIComponent(query)}` : "/search");
               }}
-              className="px-2 py-1 rounded-full text-primary hover:bg-primary/10 transition font-medium"
+              className="px-2.5 py-1 rounded-full text-[11px] font-medium text-primary hover:bg-primary/10 transition"
               title="Open full AI search page"
             >
               Full Page ↗
+            </button>
+
+            <button
+              type="button"
+              onClick={() => dispatch(setSearchOpen(false))}
+              className="rounded-full p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground transition ml-1"
+              aria-label="Close search"
+            >
+              <X className="h-4 w-4" />
             </button>
           </div>
         </div>
 
         {/* Search Input Bar */}
         <div className="flex items-center gap-3 border-b px-5 py-3.5 bg-background">
-          <Search className="h-5 w-5 text-muted-foreground" />
-          <Input
+          <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+          <input
             autoFocus
+            type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(event) => {
@@ -162,17 +174,17 @@ export function SearchDialog() {
             }}
             placeholder={
               isAiMode
-                ? "Try 'Summer cotton shirt under ৳3000' or 'Party dress'..."
+                ? "Try 'Summer cotton shirt under ৳3,000' or 'Party dress'..."
                 : "Search by keyword..."
             }
-            className="h-auto border-0 px-0 py-0 text-base shadow-none focus-visible:ring-0"
+            className="w-full bg-transparent text-base text-foreground placeholder:text-muted-foreground/60 outline-none border-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 shadow-none p-0"
           />
-          {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />}
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="rounded-full p-1 text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+              className="rounded-full p-1 text-muted-foreground transition hover:bg-secondary hover:text-foreground shrink-0"
               aria-label="Clear"
             >
               <X className="h-4 w-4" />

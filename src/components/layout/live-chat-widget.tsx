@@ -310,7 +310,7 @@ export function LiveChatWidget() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask Gemini about shirts, delivery, fit..."
-                className="text-xs h-10 rounded-xl"
+                className="text-xs h-10 rounded-xl bg-background border-border/80 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0"
               />
               <Button
                 type="submit"
